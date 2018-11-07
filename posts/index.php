@@ -77,9 +77,8 @@
 										</div>
 
 								</div>
-								<div class="4u 12u(narrower)">
+								<!-- <div class="4u 12u(narrower)">
 
-									<!-- Sidebar -->
 										<div class="sidebar">
 											<section>
 												<header>
@@ -107,7 +106,7 @@
 											</section>
 										</div>
 
-								</div>
+								</div> -->
 							</div>
 						</section>
 
