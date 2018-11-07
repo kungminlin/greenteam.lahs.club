@@ -34,7 +34,7 @@
 						<section class="wrapper style4 container">
 
 							<div class="row 150%">
-								<div class="8u 12u(narrower)">
+								<div class="12u 12u(narrower)">
 
 									<!-- Content -->
 										<div class="content">
