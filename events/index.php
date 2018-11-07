@@ -84,6 +84,20 @@
 										<p>To celebrate Earth Day which happened consequently on Sunday, the LAHS Green Team presented Los Altos High School with a week of fun activities. Students participated in a Kahoot competition with funny environmental trivias, played with the blender bikes to get wholesome smoothies, and even got free succulents by answering a few questions. The event was very interactive and the LAHS Green Team was able to popularize/promote green tips to our student population to create a greener day for all of us!</p>
 									</section>
 								</article>
+								<!-- <article>
+									<section>
+										<p>No Upcoming Events!</p>
+									</section>
+								</article> -->
+								<header><h1 style="font-weight:bold">Sponsors and Partners</h1></header>
+								<article>
+									<section>
+										<header style="font-weight:bolder">
+											Aqua Cleaners Inc.
+										</header>
+										<p>Aqua Cleaners Inc. is an apparel care company which strives to promote environmentalism by deploying environmentally-friendly cleaning and laundry technologies. Their website can be found <a href="http://aquacleaners.com/">here</a>, and more sponsorship details can be found in <a href="aqua_cleaners.pdf">this flyer.</a></p>
+									</section>
+								</article>
 							</div>
 
 							<!-- Content -->
@@ -117,7 +131,7 @@
 								</div> -->
 
 					<!-- Two -->
-						<section class="wrapper style1 container">
+						<!-- <section class="wrapper style1 container">
 							<header><h1 style="font-weight:bold">Upcoming Events</h1></header>
 							<div class="content">
 								<article>
@@ -141,7 +155,7 @@
 									</section>
 								</article>
 							</div>
-						</section>
+						</section> -->
 
 				</article>
 
