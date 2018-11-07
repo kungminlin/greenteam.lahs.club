@@ -112,7 +112,7 @@
 						</section>
 
 					<!-- Two -->
-						<section class="wrapper style1 container special">
+						<!-- <section class="wrapper style1 container special">
 							<div class="row">
 								<div class="4u 12u(narrower)">
 
@@ -160,7 +160,7 @@
 
 								</div>
 							</div>
-						</section>
+						</section> -->
 
 				</article>
 
