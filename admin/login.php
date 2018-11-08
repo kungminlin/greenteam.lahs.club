@@ -20,12 +20,16 @@ $result = mysqli_query($link, $sql);
 
 if (mysqli_num_rows($result) > 0) {
   $user = mysqli_fetch_assoc($result);
-  $_SESSION['logged_in'] = array(
-    'username' => $user['username'],
-    'first_name' => $user['first_name'],
-    'last_name' => $user['last_name']
-  );
-  $response->error = "";
+  if (md5($_POST['password']) == $user['password'])
+    $_SESSION['logged_in'] = array(
+      'username' => $user['username'],
+      'first_name' => $user['first_name'],
+      'last_name' => $user['last_name']
+    );
+    $response->error = "";
+  } else {
+    $response->error = "Incorrect username or password.";
+  }
     // while($row = mysqli_fetch_assoc($result)) {
     //     if ($_POST['username'] == $row['username'] && md5($_POST['password']) == $row['password']) {
     //       $_SESSION['logged_in'] = array(
@@ -41,7 +45,7 @@ if (mysqli_num_rows($result) > 0) {
     //     }
     // }
 } else {
-  $response->error = "Incorrect username or password. Test.";
+  $response->error = "Incorrect username or password.";
 }
 
 echo $response->error;
