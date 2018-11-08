@@ -20,7 +20,7 @@ $result = mysqli_query($link, $sql);
 
 if (mysqli_num_rows($result) > 0) {
   $user = mysqli_fetch_assoc($result);
-  if (md5($_POST['password']) == $user['password'])
+  if (md5($_POST['password']) == $user['password']) {
     $_SESSION['logged_in'] = array(
       'username' => $user['username'],
       'first_name' => $user['first_name'],
