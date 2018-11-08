@@ -15,7 +15,7 @@ if ($link === false) {
 
 $username = mysqli_real_escape_string($link, $_POST['username']);
 
-$sql = "SELECT * FROM admins WHERE username = $username";
+$sql = "SELECT * FROM admins WHERE username = '$username'";
 $result = mysqli_query($link, $sql);
 
 if (mysqli_num_rows($result) > 0) {
@@ -41,7 +41,7 @@ if (mysqli_num_rows($result) > 0) {
     //     }
     // }
 } else {
-  $response->error = "Incorrect username or password.";
+  $response->error = "Incorrect username or password. Test.";
 }
 
 echo $response->error;
