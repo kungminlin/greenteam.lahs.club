@@ -30,20 +30,6 @@ if (mysqli_num_rows($result) > 0) {
   } else {
     $response->error = "Incorrect username or password.";
   }
-    // while($row = mysqli_fetch_assoc($result)) {
-    //     if ($_POST['username'] == $row['username'] && md5($_POST['password']) == $row['password']) {
-    //       $_SESSION['logged_in'] = array(
-    //         'username' => $row['username'],
-    //         'first_name' => $row['first_name'],
-    //         'last_name' => $row['last_name']
-    //       );
-    //       $response->error = "";
-    //       break;
-    //     }
-    //     else {
-    //       $response->error = "Incorrect username or password.";
-    //     }
-    // }
 } else {
   $response->error = "Incorrect username or password.";
 }
