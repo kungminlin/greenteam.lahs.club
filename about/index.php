@@ -45,20 +45,19 @@
 											<section>
 												<a class="image featured"><img src="/images/sarah_anya.png" /></a>
 												<header>
-													<h3><strong>Co-President</strong> Anya Gupta</h3>
+													<h3><strong>Co-President</strong> Elena Atluri</h3>
 												</header>
 												<footer>
-													<p>Anya Gupta, a senior at Los Altos High School, is an active volunteer in environmental work in her community. She is dedicated to bring the same environmentally-minded culture from the community to her high school, educating her peers about the importance of our natural world. She has contributed not only through community service, but also by organizing several activities such as the Student for Green High Schools conference and smaller activities on campus.</p>
+													<p>Elene Atluri is a senior at Los Altos High School</p>
 												</footer>
 											</section>
 
 											<section>
-												<!-- <a href="#" class="image featured"><img src="/images/pic03.jpg" alt="" /></a> -->
 												<header>
-													<h3><strong>Co-President</strong> Kung-Min Lin</h3>
+													<h3><strong>Co-President</strong> Audrey Chang</h3>
 												</header>
 												<footer>
-													<p>Kung-Min Lin, a junior at Los Altos High School, is a tech enthusiast who has personally experienced the harmful impacts of modern technology on the environment. He strives to integrate technology with environmentalism in order to promote it more effectively, creating a community in which technology and nature can coexist.</p>
+													<p>Audrey Chang is a junior at Los Altos High School</p>
 												</footer>
 											</section>
 										</div>
@@ -85,14 +84,14 @@
 
 					<!-- Two -->
 						<section class="wrapper style1 container special">
-							<header><h1><strong>2018-2019 Officers</strong></h1></header>
+							<header><h1><strong>2019-2020 Officers</strong></h1></header>
 							<br />
 							<div class="row">
 								<div class="4u 12u(narrower)">
 
 									<section style="box-shadow: 0 0 50px rgba(5, 5, 5, 0.7); padding:20px">
 										<header>
-											<h3><strong>Audrey Chang</strong></h3>
+											<h3><strong>Katy Stadler</strong></h3>
 											<h4>Vice President</h4>
 										</header>
 										<!-- <footer>
@@ -107,7 +106,7 @@
 
 									<section style="box-shadow: 0 0 50px rgba(5, 5, 5, 0.7); padding:20px">
 										<header>
-											<h3><strong>Elena Atluri</strong></h3>
+											<h3><strong>Annika Gaglani</strong></h3>
 											<h4>Treasurer</h4>
 										</header>
 									</section>
@@ -117,7 +116,7 @@
 
 									<section style="box-shadow: 0 0 50px rgba(5, 5, 5, 0.7); padding:20px">
 										<header>
-											<h3><strong>Samantha Kao</strong></h3>
+											<h3><strong>Natasha Tanabe</strong></h3>
 											<h4>Secretary</h4>
 										</header>
 									</section>
@@ -128,21 +127,31 @@
 
 						<section class="wrapper style1 container special">
 							<div class="row">
-								<div class="6u 12u(narrower)">
+								<div class="4u 12u(narrower)">
 
 									<section style="box-shadow: 0 0 50px rgba(5, 5, 5, 0.7); padding:20px">
 										<header>
-											<h3><strong>Yash Shahani</strong></h3>
+											<h3><strong>Adam Hollingworth</strong></h3>
 											<h4>Public Relations</h4>
 										</header>
 									</section>
 
 								</div>
-								<div class="6u 12u(narrower)">
+								<div class="4u 12u(narrower)">
 
 									<section style="box-shadow: 0 0 50px rgba(5, 5, 5, 0.7); padding:20px">
 										<header>
-											<h3><strong>Nikolas Gibson</strong></h3>
+											<h3><strong>Margaret Carpetz</strong></h3>
+											<h4>Public Relations</h4>
+										</header>
+									</section>
+
+								</div>
+								<div class="4u 12u(narrower)">
+
+									<section style="box-shadow: 0 0 50px rgba(5, 5, 5, 0.7); padding:20px">
+										<header>
+											<h3><strong>May Jiang</strong></h3>
 											<h4>Public Relations</h4>
 										</header>
 									</section>
