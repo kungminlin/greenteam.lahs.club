@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Parking Permit Proposals</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  </head>
+  <body>
+    <div id="login-panel" class="valign-wrapper" style="display:none;">
+      <div id="login"></div>
+    </div>
+    <div id="admin-panel" class="row">
+      <div class="col s12">
+        <ul class="tabs tabs-fixed-width">
+          <li class="tab col s4"><a href="#applications">Applications</a></li>
+          <li class="tab col s4"><a href="#acceptances">Acceptances</a></li>
+          <li class="tab col s4"><a href="#overview">Overview</a></li>
+        </ul>
+      </div>
+      <div id="applications" class="panel col s12">
+        <table>
+          <thead>
+            <tr>
+              <th>Status</th>
+              <th>Name</th>
+              <th>Class</th>
+              <th>Email</th>
+              <th>Eligibility</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="applicant">
+              <td>Accepted</td>
+              <td>Kung-Min Lin</td>
+              <td>2020</td>
+              <td>mml0816@gmail.com</td>
+              <td>Eligible</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div id="acceptances" class="panel col s12">
+        Acceptances
+      </div>
+      <div id="overview" class="panel col s12">
+        Overview
+      </div>
+    </div>
+    <script src="./js/index.js"></script>
+    <script src="https://apis.google.com/js/platform.js?onload=onLoad" async defer></script>
+  </body>
+</html>
