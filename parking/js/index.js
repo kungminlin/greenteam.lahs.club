@@ -11,18 +11,32 @@ $(document).ready(function() {
   $(document).on('click', '.applicant', (e) => {
     gapi.client.sheets.spreadsheets.values.get({
       spreadsheetId: conf.SHEETS_ID,
-      range: 'Parking Permit Application Response',
+      range: 'Parking Permit Application Response'
     }).then((response) => {
       var row = response.result.values[parseInt($(e.target).closest('.applicant').attr('data-row-id')) - 1];
-      $("#edit-modal ul").empty();
+      $("#info-modal ul").empty();
       Object.keys(conf.COLUMN_ID).forEach((key) => {
-        $("#edit-modal ul").append("<li class='" + key + "'><b>" + key + "</b>: " + row[getColID(conf.COLUMN_ID[key])] + "</li>");
+        $("#info-modal ul").append("<li class='" + key + "'><b>" + key + "</b>: " + row[getColID(conf.COLUMN_ID[key])] + "</li>");
       })
-      $("#edit-modal").attr('data-id') = $(e.target).closest('.applicant').attr('data-row-id');
-      var modal = M.Modal.getInstance($("#edit-modal"));
+      $("#info-modal").attr('data-id', $(e.target).closest('.applicant').attr('data-row-id'));
+      var modal = M.Modal.getInstance($("#info-modal"));
       modal.open();
     })
+  })
 
+  $(document).on('click', '#info-modal .edit', (e) => {
+    $("#info-modal li").each((e, target) => {
+      $('#edit-modal ul').append("<li class='" + $(target)."'")
+    })
+  })
+
+  $(document).on('click', '#info-modal .delete', (e) => {
+    if (confirm("Do you wish to delete this applicant?")) {
+      gapi.client.sheets.spreadsheets.values.clear({
+        spreadsheetId: conf.SHEETS_ID,
+        range: "'Parking Permit Application Response'!" + (parseInt($(e.target).closest("#info-modal").attr("data-id"))+1) + ":" + (parseInt($(e.target).closest("#info-modal").attr("data-id"))+1);
+      })
+    }
   })
 })
 
