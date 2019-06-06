@@ -3,7 +3,9 @@
   <head>
     <title>Parking Permit Proposals</title>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" media="screen,projection">
     <link rel="stylesheet" href="./css/main.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
@@ -13,17 +15,33 @@
       <div id="login"></div>
     </div>
     <div id="admin-panel" class="row" style="display:none;">
-      <div class="col s12">
-        <ul class="tabs">
-          <li class="tab col s2 active"><a href="#applications">Applications</a></li>
-          <li class="tab col s2"><a href="#acceptances">Acceptances</a></li>
-          <li class="tab col s2"><a href="#overview">Overview</a></li>
+      <div id="nav" class="col s12">
+        <ul class="tabs tabs-fixed-width">
+          <li class="tab col active"><a href="#applications">Applications</a></li>
+          <li class="tab col"><a href="#acceptances">Acceptances</a></li>
+          <li class="tab col"><a href="#overview">Overview</a></li>
         </ul>
       </div>
+
+      <div id="select-actions" class="fixed-action-btn">
+        <a class="btn-floating btn-large white">
+          <i class="large material-icons black-text">menu</i>
+        </a>
+        <ul>
+          <li><a onclick="window.location.reload();" class="btn-floating yellow darken-1"><i class="material-icons">exit_to_app</i></a></li>
+          <li><a onclick="requestApplicants();" class="btn-floating green"><i class="material-icons">refresh</i></a></li>
+          <li><a class="btn-floating blue"><i class="material-icons">file_download</i></a></li>
+          <li class='select-action accept' style="display:none;"><a class="btn-floating blue"><i class="material-icons">done</i></a></li>
+          <li class='select-action reject' style="display:none;"><a class="btn-floating blue"><i class="material-icons">do_not_disturb</i></a></li>
+          <li class='select-action delete' style="display:none;"><a class="btn-floating red"><i class="material-icons">delete_forever</i></a></li>
+        </ul>
+      </div>
+
       <div id="applications" class="panel col s12">
         <table>
           <thead>
             <tr>
+              <th>Select</th>
               <th>Status</th>
               <th>Name</th>
               <th>Class</th>

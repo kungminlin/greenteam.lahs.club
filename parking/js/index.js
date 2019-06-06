@@ -2,27 +2,41 @@ let conf;
 const columns = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 let geocoder, map;
+let selected;
 
 $(document).ready(function() {
-  $('.tabs').tabs();
-  $('.collapsible').collapsible();
-  $('.modal').modal();
-  $('select').formSelect();
+  M.AutoInit();
 
-  $(document).on('click', '.applicant', (e) => {
-    gapi.client.sheets.spreadsheets.values.get({
-      spreadsheetId: conf.SHEETS_ID,
-      range: 'Parking Permit Application Response'
-    }).then((response) => {
-      var row = response.result.values[parseInt($(e.target).closest('.applicant').attr('data-row-id')) - 1];
-      $("#info-modal ul").empty();
-      Object.keys(conf.COLUMN_ID).forEach((key) => {
-        $("#info-modal ul").append("<li class='" + key + "'><b>" + key + "</b>: " + row[getColID(conf.COLUMN_ID[key])] + "</li>");
-      })
-      $("#info-modal").attr('data-id', $(e.target).closest('.applicant').attr('data-row-id'));
-      M.Modal.getInstance($("#info-modal")).open();
+  $(document).on('change', '.select input', (e, target) => {
+    selected = [];
+    $('.select input').each((index, e) => {
+      if (e.checked) {
+        selected.push($(e).closest('applicant').attr('data-row-id'));
+      }
     })
+    if (selected.length > 0) {
+      $('.applicant').css({'background-color': 'white'});
+      $('.select-action').show();
+    } else {
+      $('.applicant').css({'background-color': ''});
+      $('.select-action').hide();
+    }
   })
+
+  // $(document).on('click', '.applicant', (e) => {
+  //   gapi.client.sheets.spreadsheets.values.get({
+  //     spreadsheetId: conf.SHEETS_ID,
+  //     range: 'Parking Permit Application Response'
+  //   }).then((response) => {
+  //     var row = response.result.values[parseInt($(e.target).closest('.applicant').attr('data-row-id')) - 1];
+  //     $("#info-modal ul").empty();
+  //     Object.keys(conf.COLUMN_ID).forEach((key) => {
+  //       $("#info-modal ul").append("<li class='" + key + "'><b>" + key + "</b>: " + row[getColID(conf.COLUMN_ID[key])] + "</li>");
+  //     })
+  //     $("#info-modal").attr('data-id', $(e.target).closest('.applicant').attr('data-row-id'));
+  //     M.Modal.getInstance($("#info-modal")).open();
+  //   })
+  // })
 
   $(document).on('click', '#info-modal .edit', (e) => {
     $("#edit-modal").attr("data-id", $("#info-modal").attr("data-id"));
@@ -35,6 +49,34 @@ $(document).ready(function() {
     M.Modal.getInstance($("#info-modal")).close();
     M.Modal.getInstance($("#edit-modal")).open()
   })
+
+  $('.select-action.delete').click((e) => {
+    if (confirm("Are you sure you want to delete " + selected.length + " applicants?")) {
+      var range = "'Parking Permit Application Response'!"
+      selected.forEach((id) => {
+        range += id + ",";
+      })
+      gapi.client.sheets.spreadsheets.values.clear({
+        spreadsheetId: conf.SHEETS_ID,
+        range: range.slice(-range.length, -1); // Remove last comma;
+      }).then((response) => {
+        M.toast({html: selected.length + " applicants have been deleted."});
+        selected = [];
+        requestApplicants();
+      })
+    }
+  })
+
+  // $('.select-action.accept').click((e) => {
+  //   gapi.client.sheets.spreadsheets.values.update({
+  //     spreadsheetId: conf.SHEETS_ID,
+  //     range: "'Parking Permit Application Response'!" + conf.COLUMN_ID.,
+  //     valueInputOption: "RAW",
+  //     resource: {
+  //       values: [data]
+  //     }
+  //   })
+  // })
 
   $(document).on('click', '#info-modal .delete', (e) => {
     if (confirm("Do you wish to delete this applicant?")) {
@@ -95,7 +137,7 @@ function requestApplicants() {
       for (i = 1; i < range.values.length; i++) {
         var row = range.values[i];
         var column = conf.COLUMN_ID;
-        $('#applications tbody').append("<tr class='applicant " + (row[getColID(column.eligibility)] ? row[getColID(column.eligibility)].toLowerCase() : "") + "' data-row-id='" + (i+1) + "' data-address='" + row[getColID(column.address)] + "'><td class='status'>" + (row[getColID(column.status)] ? row[getColID(column.status)] : "None") + "</td><td class='name'>" + row[getColID(column.firstname)] + " " + row[getColID(column.lastname)] + "</td><td class='class'>" + row[getColID(column.class)] + "</td><td class='email'>" + row[getColID(column.email)] + "</td><td class='eligibility'>" + (row[getColID(column.eligibility)] ? row[getColID(column.eligibility)] : "") + "</td></tr>")
+        $('#applications tbody').append("<tr class='applicant " + (row[getColID(column.eligibility)] ? row[getColID(column.eligibility)].toLowerCase() : "") + "' data-row-id='" + (i+1) + "' data-address='" + row[getColID(column.address)] + "'><td class='select'><label><input type='checkbox' class='filled-in'><span></span></label></td><td class='status'>" + (row[getColID(column.status)] ? row[getColID(column.status)] : "None") + "</td><td class='name'>" + row[getColID(column.firstname)] + " " + row[getColID(column.lastname)] + "</td><td class='class'>" + row[getColID(column.class)] + "</td><td class='email'>" + row[getColID(column.email)] + "</td><td class='eligibility'>" + (row[getColID(column.eligibility)] ? row[getColID(column.eligibility)] : "") + "</td></tr>")
       }
       verifyEligibility(false);
     } else {

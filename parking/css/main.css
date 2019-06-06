@@ -11,6 +11,14 @@
     margin: 0 auto;
   }
 
+#admin-panel {
+  margin-bottom: 0;
+}
+
+#nav, #applications {
+  padding: 0;
+}
+
 .applicant {
   cursor: pointer;
 }
@@ -19,4 +27,13 @@
 }
 .applicant.ineligible {
   background-color: var(--ineligible-color);
+}
+
+/* Select header */
+#applications th:first-child {
+  padding-left: 15px;
+}
+
+.select {
+  padding-left: 15px;
 }
