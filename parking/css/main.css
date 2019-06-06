@@ -15,7 +15,7 @@
   margin-bottom: 0;
 }
 
-#nav, #applications {
+#nav, .panel {
   padding: 0;
 }
 
@@ -45,4 +45,8 @@
 
 .select {
   padding-left: 15px;
+}
+
+#map {
+  height: calc(100vh - 48px);
 }

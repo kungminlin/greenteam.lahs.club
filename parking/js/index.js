@@ -170,6 +170,7 @@ function init() {
   $("#login-panel").hide();
   $("#admin-panel").show();
   requestApplicants();
+  initMap();
 }
 
 function requestApplicants() {
@@ -213,20 +214,19 @@ function editApplicant(id, data) {
 function verifyEligibility(override) {
   geocoder = new google.maps.Geocoder();
 
-  $.getJSON("./coords.json", function(coords) {
-    let boundary = new google.maps.Polyline({
-      path: coords,
-      strokeColor: '#FF0000',
-      strokeOpacity: 1.0,
-      strokeWeight: 2
-    })
-    checkEligibility(override, boundary, 0);
-  });
+  let boundary = new google.maps.Polyline({
+    path: conf.COORDS,
+    strokeColor: '#FF0000',
+    strokeOpacity: 1.0,
+    strokeWeight: 2
+  })
+  checkEligibility(override, boundary, 0);
 }
 
 // Recursively check the geocode to prevent OVER_QUERY_LIMIT
 function checkEligibility(override, boundary, i) {
   if (i >= $('.applicant').length) {
+    if (override) requestApplicants();
     return;
   }
   if (!override && $($('.applicant')[i]).find('.eligibility').text().trim() !== "") {
@@ -240,7 +240,9 @@ function checkEligibility(override, boundary, i) {
         var latLng = new google.maps.LatLng(result[0].geometry.location.lat(), result[0].geometry.location.lng());
         var eligibility = google.maps.geometry.poly.containsLocation(latLng, boundary) ? "Ineligible" : "Eligible";
         update($target.attr('data-row-id'), conf.COLUMN_ID.eligibility, eligibility)
-        $target.find('.eligibility').text(eligibility);
+        update($target.attr('data-row-id'), conf.COLUMN_ID.lat, result[0].geometry.location.lat());
+        update($target.attr('data-row-id'), conf.COLUMN_ID.lng, result[0].geometry.location.lng());
+        // $target.find('.eligibility').text(eligibility);
         $target.removeClass("ineligible");
         $target.removeClass("eligible");
         $target.addClass(eligibility.toLowerCase());
@@ -265,6 +267,67 @@ function update(id, column, data) {
     }
   }).then((response) => {
     console.log(response.result);
+  })
+}
+
+function initMap() {
+  var map = new google.maps.Map(document.getElementById('map'), {
+    center: {lat: 37.3866556, lng: -122.1111336},
+    zoom: 13
+  });
+  let boundary = new google.maps.Polygon({
+    path: conf.COORDS,
+    strokeColor: '#FF0000',
+    strokeOpacity: 1.0,
+    strokeWeight: 2,
+    fillColor: '#FF0000',
+    fillOpacity: 0.35
+  });
+  boundary.setMap(map);
+  gapi.client.sheets.spreadsheets.values.get({
+    spreadsheetId: conf.SHEETS_ID,
+    range: 'Parking Permit Application Response',
+  }).then((response) => {
+    var range = response.result;
+    $('#applications tbody').empty();
+    if (range.values.length > 0) {
+      for (i = 1; i < range.values.length; i++) {
+        var row = range.values[i];
+        var column = conf.COLUMN_ID
+        var details = "";
+        Object.keys(column).forEach((key) => {
+          details += "<p><b>" + key + "</b>: " + row[getColID(column[key])] + "</p>";
+        })
+
+        var contentString = '<div id="content">'+
+      '<div id="siteNotice">'+
+      '</div>'+
+      '<h4 id="firstHeading" class="firstHeading">' + row[getColID(column.firstname)] + " " + row[getColID(column.lastname)] + '</h4>'+
+      '<div id="bodyContent">'+
+      details
+      '</div>'+
+      '</div>';
+
+        var infowindow = new google.maps.InfoWindow({content: contentString});
+
+        var marker = new google.maps.Marker({
+          position: {lat: parseFloat(row[getColID(column.lat)]), lng: parseFloat(row[getColID(column.lng)])},
+          map: map,
+          title: row[getColID(column.firstname)] + " " + row[getColID(column.lastname)]
+        });
+
+        // marker.addListener('click', () => {
+        //   infoWindow.open(map, marker);
+        // })
+
+        google.maps.event.addListener(marker,'click', (function(marker,infowindow) {
+          return function() {
+            infowindow.open(map,marker);
+          };
+        })(marker,infowindow));
+
+      }
+    }
   })
 }
 
