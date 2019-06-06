@@ -5,3 +5,10 @@
   #login {
     margin: 0 auto;
   }
+
+.eligible {
+  background-color: green;
+}
+.ineligible {
+  background-color: red;
+}

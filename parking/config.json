@@ -1,6 +1,23 @@
 {
   "DISCOVERY_DOCS": ["https://sheets.googleapis.com/$discovery/rest?version=v4"],
-  "SCOPES": "https://www.googleapis.com/auth/spreadsheets.readonly",
+  "SCOPES": "https://www.googleapis.com/auth/spreadsheets",
   "API_KEY": "AIzaSyCfJeXBhon-wq1ja2DtqB--yqJ4o-8MBiM",
-  "CLIENT_ID": "1087687977785-e70ohfp7urv0hjthc81gl7kbhd0fr4j9.apps.googleusercontent.com"
+  "CLIENT_ID": "1087687977785-e70ohfp7urv0hjthc81gl7kbhd0fr4j9.apps.googleusercontent.com",
+  "SHEETS_ID": "198eLJwsnq1SYm7u7MoSulSwDfyleg8R6leetDg0bJpQ",
+  "COLUMN_ID": {
+    "timestamp": "A",
+    "email": "B",
+    "firstname": "C",
+    "lastname": "D",
+    "lahs_id": "E",
+    "mvla_email": "F",
+    "address": "G",
+    "ev": "H",
+    "ev_model": "I",
+    "class": "J",
+    "agree": "K",
+    "signature": "L",
+    "eligibility": "M",
+    "status": "N"
+  }
 }
