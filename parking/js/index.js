@@ -16,7 +16,7 @@ $(document).ready(function() {
       var row = response.result.values[parseInt($(e.target).closest('.applicant').attr('data-row-id')) - 1];
       $("#edit-modal ul").empty();
       Object.keys(conf.COLUMN_ID).forEach((key) => {
-        $("#edit-modal ul").append("<li class='" + key + "'>" + key + ": " + row[getColID(conf.COLUMN_ID[key])] + "</li>");
+        $("#edit-modal ul").append("<li class='" + key + "'><b>" + key + "</b>: " + row[getColID(conf.COLUMN_ID[key])] + "</li>");
       })
       var modal = M.Modal.getInstance($("#edit-modal"));
       modal.open();
@@ -51,6 +51,7 @@ function onLoad() {
 function init() {
   $("#login-panel").hide();
   $("#admin-panel").show();
+  requestApplicants();
 }
 
 function requestApplicants() {

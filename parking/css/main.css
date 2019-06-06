@@ -1,3 +1,8 @@
+:root {
+  --eligible-color: #80cbc4;
+  --ineligible-color: #e57373;
+}
+
 #login-panel {
   width: 100vw;
   height: 100vh;
@@ -10,8 +15,8 @@
   cursor: pointer;
 }
 .applicant.eligible {
-  background-color: green;
+  background-color: var(--eligible-color);
 }
 .applicant.ineligible {
-  background-color: red;
+  background-color: var(--ineligible-color);
 }
