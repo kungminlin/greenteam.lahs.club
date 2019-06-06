@@ -7,6 +7,7 @@ $(document).ready(function() {
   $('.tabs').tabs();
   $('.collapsible').collapsible();
   $('.modal').modal();
+  $('select').formSelect();
 
   $(document).on('click', '.applicant', (e) => {
     gapi.client.sheets.spreadsheets.values.get({
@@ -19,24 +20,38 @@ $(document).ready(function() {
         $("#info-modal ul").append("<li class='" + key + "'><b>" + key + "</b>: " + row[getColID(conf.COLUMN_ID[key])] + "</li>");
       })
       $("#info-modal").attr('data-id', $(e.target).closest('.applicant').attr('data-row-id'));
-      var modal = M.Modal.getInstance($("#info-modal"));
-      modal.open();
+      M.Modal.getInstance($("#info-modal")).open();
     })
   })
 
   $(document).on('click', '#info-modal .edit', (e) => {
+    $("#edit-modal").attr("data-id", $("#info-modal").attr("data-id"));
     $("#info-modal li").each((e, target) => {
-      $('#edit-modal ul').append("<li class='" + $(target)."'")
+      var key = $(target).text().split(": ")[0];
+      var value = $(target).text().split(": ")[1];
+      $('#edit-modal #' + key).val(value);
     })
+    M.updateTextFields();
+    M.Modal.getInstance($("#info-modal")).close();
+    M.Modal.getInstance($("#edit-modal")).open()
   })
 
   $(document).on('click', '#info-modal .delete', (e) => {
     if (confirm("Do you wish to delete this applicant?")) {
       gapi.client.sheets.spreadsheets.values.clear({
         spreadsheetId: conf.SHEETS_ID,
-        range: "'Parking Permit Application Response'!" + (parseInt($(e.target).closest("#info-modal").attr("data-id"))+1) + ":" + (parseInt($(e.target).closest("#info-modal").attr("data-id"))+1);
+        range: "'Parking Permit Application Response'!" + (parseInt($(e.target).closest("#info-modal").attr("data-id"))+1) + ":" + (parseInt($(e.target).closest("#info-modal").attr("data-id"))+1)
       })
     }
+  })
+
+  $(document).on('click', '#edit-modal .modal-close', (e) => {
+    var formdata = new FormData($("#edit-modal form")[0]);
+    let data = new Array(26);
+    formdata.forEach((value, key) => {
+      data[getColID(conf.COLUMN_ID[key])] = value;
+    });
+    editApplicant($("#edit-modal").attr("data-id"), data);
   })
 })
 
@@ -89,6 +104,22 @@ function requestApplicants() {
   }, function(response) {
     $('#applications tbody').append('<p>Error: ' + response.result.error.message + '</p>');
   });
+}
+
+function editApplicant(id, data) {
+  gapi.client.sheets.spreadsheets.values.update({
+    spreadsheetId: conf.SHEETS_ID,
+    range: "'Parking Permit Application Response'!A" + id + ":Z" + id,
+    valueInputOption: "RAW",
+    resource: {
+      values: [data]
+    }
+  }).then((response) => {
+    if (response.status === 200) {
+      M.toast({html: "Applicant has been successfully updated"});
+      requestApplicants();
+    }
+  })
 }
 
 function verifyEligibility(override) {

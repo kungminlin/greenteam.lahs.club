@@ -14,10 +14,10 @@
     </div>
     <div id="admin-panel" class="row" style="display:none;">
       <div class="col s12">
-        <ul class="tabs tabs-fixed-width">
-          <li class="tab col s4"><a href="#applications">Applications</a></li>
-          <li class="tab col s4"><a href="#acceptances">Acceptances</a></li>
-          <li class="tab col s4"><a href="#overview">Overview</a></li>
+        <ul class="tabs">
+          <li class="tab col s2 active"><a href="#applications">Applications</a></li>
+          <li class="tab col s2"><a href="#acceptances">Acceptances</a></li>
+          <li class="tab col s2"><a href="#overview">Overview</a></li>
         </ul>
       </div>
       <div id="applications" class="panel col s12">
@@ -60,20 +60,51 @@
           <div class="modal-content">
             <h4>Edit</h4>
             <div class="row">
-              <div class="col s12">
-                <div class="col s8">
-                  <ul>
-                  </ul>
+              <form class="col s12">
+                <div class="row">
+                  <div class="input-field col s6">
+                    <input name="firstname" id="firstname" type="text" class="validate">
+                    <label for="firstname">First Name</label>
+                  </div>
+                  <div class="input-field col s6">
+                    <input name="lastname" id="lastname" type="text" class="validate">
+                    <label for="lastname">Last Name</label>
+                  </div>
                 </div>
-                <div class="col s4">
-                  <a class="edit waves-effect waves-blue blue btn">Edit</a>
-                  <a class="delete waves-effect waves-red red btn">Delete</a>
+                <div class="row">
+                  <div class="input-field col s6">
+                    <select name="class" id="class">
+                      <option value="Class of 2019">Class of 2019</option>
+                      <option value="Class of 2020">Class of 2020</option>
+                    </select>
+                    <label for="class">Class</label>
+                  </div>
+                  <div class="input-field col s6">
+                    <input name="lahs_id" id="lahs_id" type="number" class="validate">
+                    <label for="lahs_id">Student ID</label>
+                  </div>
                 </div>
-              </div>
+                <div class="row">
+                  <div class="input-field col s6">
+                    <input name="email" id="email" type="text" class="validate">
+                    <label for="email">Personal Email</label>
+                  </div>
+                  <div class="input-field col s6">
+                    <input name="mvla_email" id="mvla_email" type="text" class="validate">
+                    <label for="mvla_email">MVLA Email</label>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="input-field col s12">
+                    <input name="address" id="address" type="text" class="validate">
+                    <label for="address">Address</label>
+                  </div>
+                </div>
+              </form>
             </div>
           </div>
           <div class="modal-footer">
-            <a href="#!" class="modal-close waves-effect waves-red btn-flat">Close</a>
+            <a href="#!" class="modal-close waves-effect waves-green btn-flat">Confirm</a>
           </div>
         </div>
 
