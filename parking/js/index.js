@@ -18,6 +18,7 @@ $(document).ready(function() {
       Object.keys(conf.COLUMN_ID).forEach((key) => {
         $("#edit-modal ul").append("<li class='" + key + "'><b>" + key + "</b>: " + row[getColID(conf.COLUMN_ID[key])] + "</li>");
       })
+      $("#edit-modal").attr('data-id') = $(e.target).closest('.applicant').attr('data-row-id');
       var modal = M.Modal.getInstance($("#edit-modal"));
       modal.open();
     })
@@ -86,20 +87,39 @@ function verifyEligibility(override) {
       strokeOpacity: 1.0,
       strokeWeight: 2
     })
-    $('.applicant').each((e, target) => {
-      if ($(target).find('.eligibility').text().trim() === "" || override) geocoder.geocode({'address': $(target).attr('data-address')}, function(result, status) {
-        if (status === "OK") {
-          var latLng = new google.maps.LatLng(result[0].geometry.location.lat(), result[0].geometry.location.lng());
-          var eligibility = google.maps.geometry.poly.containsLocation(latLng, boundary) ? "Eligible" : "Ineligible";
-          update($(target).attr('data-row-id'), conf.COLUMN_ID.eligibility, eligibility)
-          $(target).find('.eligibility').text(eligibility);
-          $(target).addClass(eligibility.toLowerCase());
-        } else {
-          console.log(status);
-        }
-      })
-    })
+    checkEligibility(override, boundary, 0);
   });
+}
+
+// Recursively check the geocode to prevent OVER_QUERY_LIMIT
+function checkEligibility(override, boundary, i) {
+  if (i >= $('.applicant').length) {
+    return;
+  }
+  if (!override && $($('.applicant')[i]).find('.eligibility').text().trim() !== "") {
+    checkEligibility(override, boundary, i+1);
+  }
+  else {
+    $target = $($('.applicant')[i])
+    geocoder.geocode({'address': $target.attr('data-address')}, (result, status) => {
+      if (status === "OK") {
+        $target = $($('.applicant')[i]);
+        var latLng = new google.maps.LatLng(result[0].geometry.location.lat(), result[0].geometry.location.lng());
+        var eligibility = google.maps.geometry.poly.containsLocation(latLng, boundary) ? "Ineligible" : "Eligible";
+        update($target.attr('data-row-id'), conf.COLUMN_ID.eligibility, eligibility)
+        $target.find('.eligibility').text(eligibility);
+        $target.removeClass("ineligible");
+        $target.removeClass("eligible");
+        $target.addClass(eligibility.toLowerCase());
+        checkEligibility(override, boundary, i+1);
+      } else {
+        console.log(status);
+        setTimeout(() => {
+          checkEligibility(override, boundary, i);
+        }, 1500);
+      }
+    })
+  }
 }
 
 function update(id, column, data) {
