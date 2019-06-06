@@ -1,16 +1,33 @@
 let conf;
-const columns = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+const columns = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 let geocoder, map;
 
 $(document).ready(function() {
   $('.tabs').tabs();
   $('.collapsible').collapsible();
+  $('.modal').modal();
+
+  $(document).on('click', '.applicant', (e) => {
+    gapi.client.sheets.spreadsheets.values.get({
+      spreadsheetId: conf.SHEETS_ID,
+      range: 'Parking Permit Application Response',
+    }).then((response) => {
+      var row = response.result.values[parseInt($(e.target).closest('.applicant').attr('data-row-id')) - 1];
+      $("#edit-modal ul").empty();
+      Object.keys(conf.COLUMN_ID).forEach((key) => {
+        $("#edit-modal ul").append("<li class='" + key + "'>" + key + ": " + row[getColID(conf.COLUMN_ID[key])] + "</li>");
+      })
+      var modal = M.Modal.getInstance($("#edit-modal"));
+      modal.open();
+    })
+
+  })
 })
 
 function onLoad() {
-  gapi.load('client:auth2', function() {
-    $.getJSON("./config.json", function(data) {
+  gapi.load('client:auth2', () => {
+    $.getJSON("./config.json").then((data) => {
       conf = data;
       gapi.client.init({
         apiKey: conf.API_KEY,
@@ -25,7 +42,9 @@ function onLoad() {
           }
         })
       });
-    })
+    }).catch((error) => {
+      console.log(error);
+    });
   });
 }
 
@@ -38,14 +57,14 @@ function requestApplicants() {
   gapi.client.sheets.spreadsheets.values.get({
     spreadsheetId: conf.SHEETS_ID,
     range: 'Parking Permit Application Response',
-  }).then(function(response) {
+  }).then((response) => {
     var range = response.result;
     $('#applications tbody').empty();
     if (range.values.length > 0) {
       for (i = 1; i < range.values.length; i++) {
         var row = range.values[i];
         var column = conf.COLUMN_ID;
-        $('#applications tbody').append("<tr class='applicant' data-row-id='" + (i+1) + "' data-address='" + row[getColID(column.address)] + "'><td class='status'>" + (row[getColID(column.status)] ? row[getColID(column.status)] : "None") + "</td><td class='name'>" + row[getColID(column.firstname)] + " " + row[getColID(column.lastname)] + "</td><td class='class'>" + row[getColID(column.class)] + "</td><td class='email'>" + row[getColID(column.email)] + "</td><td class='eligibility'>" + (row[getColID(column.eligibility)] ? row[getColID(column.eligibility)] : "") + "</td></tr>")
+        $('#applications tbody').append("<tr class='applicant " + (row[getColID(column.eligibility)] ? row[getColID(column.eligibility)].toLowerCase() : "") + "' data-row-id='" + (i+1) + "' data-address='" + row[getColID(column.address)] + "'><td class='status'>" + (row[getColID(column.status)] ? row[getColID(column.status)] : "None") + "</td><td class='name'>" + row[getColID(column.firstname)] + " " + row[getColID(column.lastname)] + "</td><td class='class'>" + row[getColID(column.class)] + "</td><td class='email'>" + row[getColID(column.email)] + "</td><td class='eligibility'>" + (row[getColID(column.eligibility)] ? row[getColID(column.eligibility)] : "") + "</td></tr>")
       }
       verifyEligibility(false);
     } else {
@@ -66,7 +85,7 @@ function verifyEligibility(override) {
       strokeOpacity: 1.0,
       strokeWeight: 2
     })
-    $('.applicant').each(function(e, target) {
+    $('.applicant').each((e, target) => {
       if ($(target).find('.eligibility').text().trim() === "" || override) geocoder.geocode({'address': $(target).attr('data-address')}, function(result, status) {
         if (status === "OK") {
           var latLng = new google.maps.LatLng(result[0].geometry.location.lat(), result[0].geometry.location.lng());
@@ -90,7 +109,7 @@ function update(id, column, data) {
     resource: {
       values: [[data]]
     }
-  }).then(function(response) {
+  }).then((response) => {
     console.log(response.result);
   })
 }
@@ -100,6 +119,6 @@ function getCol(id) {
 }
 
 function getColID(str) {
-  if (str.length > 1) return null;
+  if (str.length > 1) return;
   return columns.indexOf(str);
 }

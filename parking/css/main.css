@@ -6,9 +6,12 @@
     margin: 0 auto;
   }
 
-.eligible {
+.applicant {
+  cursor: pointer;
+}
+.applicant.eligible {
   background-color: green;
 }
-.ineligible {
+.applicant.ineligible {
   background-color: red;
 }
