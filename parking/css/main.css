@@ -19,14 +19,23 @@
   padding: 0;
 }
 
-.applicant {
+.applicant > .status, .applicant > .name, .applicant > .class, .applicant > .email, .applicant > .eligibility {
   cursor: pointer;
 }
-.applicant.eligible {
-  background-color: var(--eligible-color);
+.applicant:hover {
+  background-color: #eceff1;
 }
-.applicant.ineligible {
-  background-color: var(--ineligible-color);
+.applicant.eligible > .eligibility {
+  color: var(--eligible-color);
+}
+.applicant.ineligible > .eligibility {
+  color: var(--ineligible-color);
+}
+.applicant.accepted > .status {
+  color: var(--eligible-color);
+}
+.applicant:not(.accepted) > .status {
+  color: var(--ineligible-color);
 }
 
 /* Select header */
