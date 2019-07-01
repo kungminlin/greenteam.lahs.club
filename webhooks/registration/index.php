@@ -23,7 +23,7 @@ $client->addScope(Google_Service_PeopleService::CONTACTS);
 $client->setAccessType('offline');
 $client->setPrompt('select_account consent');
 
-$token_path = 'token.json';
+$tokenPath = 'token.json';
 if (file_exists($tokenPath)) {
   $accessToken = json_decode(file_get_contents($tokenPath), true);
   $client->setAccessToken($accessToken);
