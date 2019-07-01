@@ -50,3 +50,7 @@
 #map {
   height: calc(100vh - 48px);
 }
+
+.options .button {
+  display: block !important;
+}

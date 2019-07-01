@@ -64,9 +64,9 @@ $user = $_SESSION['logged_in'];
 						<section class="wrapper style4 container 100%">
 
 							<!-- Content -->
-								<div class="content">
+								<div class="content options">
                   <ul>
-                    <li><a class="button center">Post Announcements</a></li>
+                    <li><a href="announcements" class="button center">Post Announcements</a></li>
                     <li><a href="blogpost" class="button center">Create New Blog Post</a></li>
                     <li><a href="blogedit" class="button center">Edit Blog Posts</a></li>
                   </ul>
