@@ -1,7 +1,7 @@
 <?php
 
 function log($msg) {
-  file_put_contents("../logs/" . strval(date("Y-m-d")) . "-LOG.txt", "[" . strval(date("h:i:s")) . "] " . $msg . "\n", FILE_APPEND);
+  file_put_contents("./logs/" . strval(date("Y-m-d")) . "-LOG.txt", "[" . strval(date("h:i:s")) . "] " . $msg . "\n", FILE_APPEND);
 }
 
 if ($json = json_decode($_POST, true)) {
