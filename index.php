@@ -69,7 +69,7 @@
 						<br />
 						<footer>
 							<ul class="buttons vertical">
-								<li><a href="#main" class="button fit scrolly">Tell Me More</a></li>
+								<li><a class="typeform-share button fit" href="https://leolin759220.typeform.com/to/rGWsTp" data-mode="popup" data-submit-close-delay="5" target="_blank" style="z-index:99999;">JOIN THE MOVEMENT</a> <script> (function() { var qs,js,q,s,d=document, gi=d.getElementById, ce=d.createElement, gt=d.getElementsByTagName, id="typef_orm_share", b="https://embed.typeform.com/"; if(!gi.call(d,id)){ js=ce.call(d,"script"); js.id=id; js.src=b+"embed.js"; q=gt.call(d,"script")[0]; q.parentNode.insertBefore(js,q) } })() </script></li>
 							</ul>
 						</footer>
 
