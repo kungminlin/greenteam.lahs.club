@@ -80,16 +80,10 @@ $service = new Google_Service_PeopleService($client);
 // }
 
 $person = new Google_Service_PeopleService_Person();
+$person->setEmailAddresses($email);
+$person->setNames($first_name . " " . $last_name);
 
-$person_email = new Google_Service_PeopleService_EmailAddress();
-$person_email->setValue($email);
-$person->setEmailAddresses($person_email);
-
-$name = new Google_Service_PeopleService_Name();
-$name->setDisplayName($first_name . " " . $last_name);
-$person->setNames($name);
-
-$exec = $service->$people->createContact($person);
+$exec = $service->people->createContact($person, array());
 echo $exec;
 
  ?>
