@@ -12,7 +12,7 @@ $last_name = $response[1]['text'];
 $class_name = $response[2]['choice']['label'];
 $email = $response[3]['email'];
 
-require_once($_SERVER['DOCUMENT_ROOT'] . '/google-api-php-client/src/Google/autoload.php');
+require __DIR__ . '/vendor/autoload.php';
 
 $service = 'registration@sustained-flux-245421.iam.gserviceaccount.com';
 $key_file = './key.json';
