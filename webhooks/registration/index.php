@@ -58,25 +58,38 @@ if ($client->isAccessTokenExpired()) {
 
 $service = new Google_Service_PeopleService($client);
 
-$optParams = array(
-  'pageSize' => 10,
-  'personFields' => 'names,emailAddresses',
-);
-$results = $service->people_connections->listPeopleConnections('people/me', $optParams);
+// $optParams = array(
+//   'pageSize' => 10,
+//   'personFields' => 'names,emailAddresses',
+// );
+// $results = $service->people_connections->listPeopleConnections('people/me', $optParams);
+//
+// if (count($results->getConnections()) == 0) {
+//   print "No connections found.\n";
+// } else {
+//   print "People:\n";
+//   foreach ($results->getConnections() as $person) {
+//     if (count($person->getNames()) == 0) {
+//       print "No names found for this connection\n";
+//     } else {
+//       $names = $person->getNames();
+//       $name = $names[0];
+//       printf("%s\n", $name->getDisplayName());
+//     }
+//   }
+// }
 
-if (count($results->getConnections()) == 0) {
-  print "No connections found.\n";
-} else {
-  print "People:\n";
-  foreach ($results->getConnections() as $person) {
-    if (count($person->getNames()) == 0) {
-      print "No names found for this connection\n";
-    } else {
-      $names = $person->getNames();
-      $name = $names[0];
-      printf("%s\n", $name->getDisplayName());
-    }
-  }
-}
+$person = new Google_Service_PeopleService_Person();
+
+$person_email = new Google_Service_PeopleService_EmailAddress();
+$person_email->setValue($email);
+$person->setEmailAddresses($person_email);
+
+$name = new Google_Service_PeopleService_Name();
+$name->setDisplayName($first_name . " " . $last_name);
+$person->setNames($name);
+
+$exec = $service->$people->createContact($person);
+echo $exec;
 
  ?>
