@@ -66,6 +66,10 @@ $name = new Google_Service_PeopleService_Name();
 $name->setGivenName($first_name);
 $name->setFamilyName($last_name);
 $person->setNames($name);
+$class = new Google_Service_PeopleService_UserDefined();
+$class->setKey("Class");
+$class->setValue($class_name);
+$person->setUserDefined($class);
 
 $person = $service->people->createContact($person, array());
 
