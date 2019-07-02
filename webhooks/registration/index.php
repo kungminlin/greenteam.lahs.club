@@ -1,5 +1,7 @@
 <?php
 
+require_once($_SERVER['DOCUMENT_ROOT'] . "/conf.ini.php");
+
 header('Content-Type: application/json');
 $req = file_get_contents('php://input');
 $req_dump = print_r($req, true);
@@ -76,5 +78,15 @@ $person = $service->people->createContact($person, array());
 $add_request = new Google_Service_PeopleService_ModifyContactGroupMembersRequest();
 $add_request->setResourceNamesToAdd($person->getResourceName());
 $service->contactGroups_members->modify("contactGroups/5511269a0db1a55f", $add_request);
+
+$subject = "Welcome, $first_name, to LAHS Green Team!";
+$mail->isHTML(true);
+$mail->Subject = $subject;
+$mail_content = file_get_contents('../../templates/email/welcome.html');
+$mail->Body = $mail_content;
+
+if (!$mail->send()) {
+  die('Mailer Error: '.$mail->ErrorInfo);
+}
 
  ?>
