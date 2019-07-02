@@ -67,6 +67,10 @@ $name->setGivenName($first_name);
 $name->setFamilyName($last_name);
 $person->setNames($name);
 
-$exec = $service->people->createContact($person, array());
+$person = $service->people->createContact($person, array());
+
+$add_request = new Google_Service_PeopleService_ModifyContactGroupMembersRequest();
+$add_request->setResourceNamesToAdd($person->getResourceName());
+$service->contactGroups_members->modify("contactGroups/5511269a0db1a55f")
 
  ?>
