@@ -1,10 +1,27 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-		<title>LAHS Green Team</title>
-		<link rel="shortcut icon" href="/images/favicon.png" />
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+		<title>LAHS Green Team</title>
+		<meta name="description" content="We are a dedicated group of students focused on fostering a culture of environmental responsibility at Los Altos High School and in the local community through organizing outreach activities and events.">
+		<meta name="keywords" content="LAHS Green Team,Environment,Environmental Organization,Environmentalism,Be Green Not Mean,Los Altos High School,Green Team,Environmental Conservation">
+		<meta name="author" content="Kung-Min Lin">
+
+		<!-- Open Graph (For Social Media Summary Cards) -->
+		<meta property="og:title" content="LAHS Green Team">
+		<meta proprety="og:description" content="We are a dedicated group of students focused on fostering a culture of environmental responsibility at Los Altos High School and in the local community through organizing outreach activities and events.">
+		<meta property="og:image" content="https://greenteam.lahs.club/images/school4.jpg">
+		<meta property="og:url" content="https://greenteam.lahs.club">
+
+		<!-- Twitter -->
+		<meta property="twitter:title" content="LAHS Green Team">
+		<meta proprety="twitter:description" content="We are a dedicated group of students focused on fostering a culture of environmental responsibility at Los Altos High School and in the local community through organizing outreach activities and events.">
+		<meta property="twitter:image" content="https://greenteam.lahs.club/images/school4.jpg">
+		<meta property="twitter:card" content="summary_large_image">
+
+		<link rel="shortcut icon" href="/images/favicon.png" />
 		<!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
 		<link rel="stylesheet" href="/assets/css/main.css" />
 		<!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
