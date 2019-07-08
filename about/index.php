@@ -141,7 +141,7 @@
 
 									<section style="box-shadow: 0 0 50px rgba(5, 5, 5, 0.7); padding:20px">
 										<header>
-											<h3><strong>Margaret Carpetz</strong></h3>
+											<h3><strong>Margaret Capetz</strong></h3>
 											<h4>Public Relations</h4>
 										</header>
 									</section>
