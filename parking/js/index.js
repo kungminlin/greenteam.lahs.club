@@ -33,9 +33,11 @@ $(document).ready(function() {
     if (selected.length > 0) {
       $('.applicant').css({'background-color': 'white'});
       $('.select-action').show();
+      $('.select-header input').prop('checked', true);
     } else {
       $('.applicant').css({'background-color': ''});
       $('.select-action').hide();
+      $('.select-header input').prop('checked', false);
     }
   })
 
@@ -51,6 +53,8 @@ $(document).ready(function() {
       })
       $("#info-modal").attr('data-id', $(e.target).closest('.applicant').attr('data-row-id'));
       M.Modal.getInstance($("#info-modal")).open();
+    }).catch((error) => {
+      console.log(error);
     })
   })
 
@@ -69,11 +73,11 @@ $(document).ready(function() {
   $('.select-action.delete').click((e) => {
     if (confirm("Are you sure you want to delete " + selected.length + " applicants?")) {
       var requests = [];
-      selected.reverse().forEach((id) => {
+      selected.sort((a, b) => {return b-a}).forEach((id) => {
         requests.push({
           "deleteDimension": {
             "range": {
-              "sheetId": 87936429,
+              "sheetId": conf.SHEETS_ID,
               "dimension": "ROWS",
               "startIndex": id-1,
               "endIndex": id
@@ -90,19 +94,21 @@ $(document).ready(function() {
         M.toast({html: selected.length + " applicants have been deleted."});
         selected = [];
         requestApplicants();
+      }).catch((error) => {
+        console.log(error);
       })
     }
   })
 
-  $('th').click((e) => {
-    if ($(e.target).find('.sort')[0].className.includes("ascending")) {
+  $('th').not('.select-header').click((e) => {
+    if ($(e.target).closest('th').find('.sort')[0].className.includes("ascending")) {
       sort(e, "descending");
       $('.sort').attr('class', 'sort');
-      $(e.target).find('.sort').addClass("descending");
+      $(e.target).closest('th').find('.sort').addClass("descending");
     } else {
       sort(e, "ascending");
       $('.sort').attr('class', 'sort');
-      $(e.target).find('.sort').addClass("ascending");
+      $(e.target).closest('th').find('.sort').addClass("ascending");
     }
   })
 
@@ -123,6 +129,8 @@ $(document).ready(function() {
       M.toast({html: selected.length + " applicants have been accepted."});
       selected = [];
       requestApplicants();
+    }).catch((error) => {
+      console.log(error);
     })
   })
 
@@ -143,14 +151,33 @@ $(document).ready(function() {
       M.toast({html: selected.length + " applicants have been rejected."});
       selected = [];
       requestApplicants();
+    }).catch((error) => {
+      console.log(error);
     })
   })
 
   $(document).on('click', '#info-modal .delete', (e) => {
     if (confirm("Do you wish to delete this applicant?")) {
-      gapi.client.sheets.spreadsheets.values.clear({
+      id = $(e.target).closest('#info-modal').attr('data-id');
+      gapi.client.sheets.spreadsheets.batchUpdate(
+      {
         spreadsheetId: conf.SPREADSHEET_ID,
-        range: "'Parking Permit Application Response'!" + (parseInt($(e.target).closest("#info-modal").attr("data-id"))+1) + ":" + (parseInt($(e.target).closest("#info-modal").attr("data-id"))+1)
+        requests: [{
+          "deleteDimension": {
+            "range": {
+              "sheetId": conf.SHEETS_ID,
+              "dimension": "ROWS",
+              "startIndex": id-1,
+              "endIndex": id
+            }
+          }
+        }]
+      }).then((response) => {
+        M.toast({html: '1 applicant has been deleted.'})
+        M.Modal.getInstance($("#info-modal")).close();
+        requestApplicants();
+      }).catch((error) => {
+        console.log(response);
       })
     }
   })
@@ -175,15 +202,23 @@ function onLoad() {
         clientId: conf.CLIENT_ID,
         discoveryDocs: conf.DISCOVERY_DOCS,
         scope: conf.SCOPES
-      }).then(function() {
+      }).then((response) => {
         $(".loader").remove();
-        gapi.signin2.render('login', {
-          'theme': 'light',
-          'onsuccess': function() {
-            init();
-          }
-        })
-      });
+        if (localStorage.ACCESS_TOKEN) {
+          gapi.client.setToken({access_token: localStorage.ACCESS_TOKEN});
+          init();
+        } else {
+          gapi.signin2.render('login', {
+            'theme': 'light',
+            'onsuccess': function() {
+              localStorage.ACCESS_TOKEN = gapi.client.getToken().access_token;
+              init();
+            }
+          })
+        }
+      }).catch((error) => {
+        console.log(error);
+      })
     }).catch((error) => {
       console.log(error);
     });
@@ -246,7 +281,9 @@ function requestApplicants() {
     $('.loader').remove();
   }, function(response) {
     $('#applications tbody').append('<p>Error: ' + response.result.error.message + '</p>');
-  });
+  }).catch((error) => {
+    console.log(error);
+  })
 }
 
 // Edit applicant and update on spreadsheets
@@ -263,6 +300,8 @@ function editApplicant(id, data) {
       M.toast({html: "Applicant has been successfully updated"});
       requestApplicants();
     }
+  }).catch((error) => {
+    console.log(error);
   })
 }
 
@@ -320,8 +359,8 @@ function update(id, column, data) {
     resource: {
       values: [[data]]
     }
-  }).then((response) => {
-    console.log(response.result);
+  }).catch((error) => {
+    console.log(error);
   })
 }
 
@@ -380,6 +419,8 @@ function initMap() {
 
       }
     }
+  }).catch((error) => {
+    console.log(error);
   })
 }
 
@@ -396,7 +437,7 @@ function getColID(str) {
 
 // Sort applicants
 function sort(e, order) {
-  var category = $(e.target)[0].className;
+  var category = $(e.target).closest("th")[0].className;
   var sign = order === "ascending" ? 1 : -1;
   switch (category) {
     case "status-header":
@@ -427,4 +468,16 @@ function sort(e, order) {
     default:
       break;
   }
+}
+
+// Open Spreadsheet
+function openSheet() {
+  window.open("https://docs.google.com/spreadsheets/d/" + conf.SPREADSHEET_ID + "/edit#gid=" + conf.SHEETS_ID);
+}
+
+// Signing Out
+function signout() {
+  gapi.client.setToken(null);
+  localStorage.removeItem("ACCESS_TOKEN");
+  window.location.reload();
 }

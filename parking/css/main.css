@@ -18,6 +18,22 @@
 #nav, .panel {
   padding: 0;
 }
+  .tabs .tab a {
+    color: #bbdefb;
+  }
+  .tabs .tab a:focus,
+  .tabs .tab a:focus.active {
+    background-color: rgba(25, 118, 210, 0.2);
+    color: #2196F3;
+  }
+  .tabs .tab a:hover,
+  .tabs .tab a.active {
+    background-color: transparent;
+    color: #2196F3;
+  }
+  .tabs .indicator {
+    background-color: #2196F3;
+  }
 
 .applicant > .status, .applicant > .name, .applicant > .class, .applicant > .email, .applicant > .eligibility {
   cursor: pointer;

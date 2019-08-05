@@ -7,8 +7,6 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" media="screen,projection">
     <link rel="stylesheet" href="./css/main.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
   </head>
   <body>
     <div class='loader'></div>
@@ -28,11 +26,13 @@
           <i class="large material-icons black-text">menu</i>
         </a>
         <ul>
-          <li><a onclick="window.location.reload();" class="btn-floating yellow darken-1 tooltipped" data-position="left" data-tooltip="Sign Out"><i class="material-icons">exit_to_app</i></a></li>
-          <li><a onclick="requestApplicants();" class="btn-floating green tooltipped" data-position="left" data-tooltip="Refresh Applicants"><i class="material-icons">refresh</i></a></li>
-          <li><a class="btn-floating blue tooltipped" data-position="left" data-tooltip="Export CSV"><i class="material-icons">file_download</i></a></li>
-          <li class='select-action accept tooltipped' data-position="left" data-tooltip="Accept Selected" style="display:none;"><a class="btn-floating blue"><i class="material-icons">done</i></a></li>
-          <li class='select-action reject tooltipped' data-position="left" data-tooltip="Reject Selected" style="display:none;"><a class="btn-floating blue"><i class="material-icons">do_not_disturb</i></a></li>
+          <li><a onclick="signout();" class="btn-floating red tooltipped" data-position="left" data-tooltip="Sign Out"><i class="material-icons">exit_to_app</i></a></li>
+          <li><a onclick="requestApplicants();" class="btn-floating blue tooltipped" data-position="left" data-tooltip="Refresh Applicants"><i class="material-icons">refresh</i></a></li>
+          <li><a onclick="openSheet();" class="btn-floating blue tooltipped" data-position="left" data-tooltip="View Spreadsheet"><i class="material-icons">open_in_new</i></a></li>
+          <li><a class="btn-floating blue tooltipped" data-position="left" data-tooltip="Export Accepted"><i class="material-icons">file_download</i></a></li>
+          <li class='select-action accept tooltipped' data-position="left" data-tooltip="Accept Selected" style="display:none;"><a class="btn-floating green"><i class="material-icons">done</i></a></li>
+          <li class='select-action reject tooltipped' data-position="left" data-tooltip="Reject Selected" style="display:none;"><a class="btn-floating red"><i class="material-icons">do_not_disturb</i></a></li>
+          <li class='select-action tooltipped' data-position="left" data-tooltip="Export Selected" style="display:none;"><a class="btn-floating blue"><i class="material-icons">system_update_alt</i></a></li>
           <li class='select-action delete tooltipped' data-position="left" data-tooltip="Delete Selected" style="display:none;"><a class="btn-floating red"><i class="material-icons">delete_forever</i></a></li>
         </ul>
       </div>
@@ -41,7 +41,7 @@
         <table>
           <thead>
             <tr>
-              <th>Select</th>
+              <th class="select-header">Select<label><input type='checkbox' class='filled-in'><span style="display:inline;margin-left:10px;"></span></label></th>
               <th class="status-header">Status <span class="sort"></span></th>
               <th class="name-header">Name <span class="sort"></span></th>
               <th class="class-header">Class <span class="sort"></span></th>
@@ -126,6 +126,27 @@
           </div>
         </div>
 
+        <div id="export-modal" class="modal modal-fixed-footer">
+          <div class="modal-content">
+            <h4>Export Properties</h4>
+            <div class="row">
+              <div class="col s12">
+                <div class="col s8">
+                  <ul>
+                  </ul>
+                </div>
+                <div class="col s4">
+                  <a class="edit waves-effect waves-blue blue btn">Edit</a>
+                  <a class="delete waves-effect waves-red red btn">Delete</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <a href="#!" class="modal-close waves-effect waves-red btn-flat">Close</a>
+          </div>
+        </div>
+
       </div>
       <div id="overview" class="panel col s12">
         <div class="row" style="margin-bottom:0">
@@ -142,8 +163,11 @@
         </div>
       </div>
     </div>
-    <script src="./js/index.js"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script src="https://apis.google.com/js/platform.js?onload=onLoad" async defer></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCfJeXBhon-wq1ja2DtqB--yqJ4o-8MBiM&libraries=geometry,visualization" async defer></script>
+    <script src="./js/index.js"></script>
   </body>
 </html>
