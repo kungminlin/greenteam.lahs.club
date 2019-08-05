@@ -7,23 +7,23 @@ let selected;
 $(document).ready(function() {
   M.AutoInit();
 
-  var $chkboxes = $('.select input');
   var lastChecked = null;
-  $chkboxes.click(function(e) {
+  $(document).on('click', '.select input', (e) => {
+      var $chkboxes = $('.select input');
+      var $target = $(e.target)[0];
       if (!lastChecked) {
-          lastChecked = this;
+          lastChecked = $target;
           return;
       }
       if (e.shiftKey) {
-        console.log('shift')
-        var start = $chkboxes.index(this);
+        var start = $chkboxes.index($target);
         var end = $chkboxes.index(lastChecked);
         $chkboxes.slice(Math.min(start,end), Math.max(start,end)+ 1).prop('checked', lastChecked.checked);
       }
-      lastChecked = this;
+      lastChecked = $target;
   });
 
-  $(document).on('change', '.select input', (e, target) => {
+  $(document).on('change', '.select input', (e) => {
     selected = [];
     $('.select input').each((index, e) => {
       if (e.checked) {
@@ -41,7 +41,7 @@ $(document).ready(function() {
 
   $(document).on('click', '.status, .name, .class, .email, .eligibility', (e) => {
     gapi.client.sheets.spreadsheets.values.get({
-      spreadsheetId: conf.SHEETS_ID,
+      spreadsheetId: conf.SPREADSHEET_ID,
       range: 'Parking Permit Application Response'
     }).then((response) => {
       var row = response.result.values[parseInt($(e.target).closest('.applicant').attr('data-row-id')) - 1];
@@ -68,19 +68,41 @@ $(document).ready(function() {
 
   $('.select-action.delete').click((e) => {
     if (confirm("Are you sure you want to delete " + selected.length + " applicants?")) {
-      var range = "'Parking Permit Application Response'!";
-      selected.forEach((id) => {
-        range += id + ":" + id + ",";
+      var requests = [];
+      selected.reverse().forEach((id) => {
+        requests.push({
+          "deleteDimension": {
+            "range": {
+              "sheetId": 87936429,
+              "dimension": "ROWS",
+              "startIndex": id-1,
+              "endIndex": id
+            }
+          }
+        })
       })
-      gapi.client.sheets.spreadsheets.values.clear({
-        spreadsheetId: conf.SHEETS_ID,
-        range: range.slice(-range.length, -1) // Remove last comma;
+      gapi.client.sheets.spreadsheets.batchUpdate(
+      {
+        spreadsheetId: conf.SPREADSHEET_ID,
+        requests: requests
       }).then((response) => {
         $('.select input').each((index, e) => {e.checked = false})
         M.toast({html: selected.length + " applicants have been deleted."});
         selected = [];
         requestApplicants();
       })
+    }
+  })
+
+  $('th').click((e) => {
+    if ($(e.target).find('.sort')[0].className.includes("ascending")) {
+      sort(e, "descending");
+      $('.sort').attr('class', 'sort');
+      $(e.target).find('.sort').addClass("descending");
+    } else {
+      sort(e, "ascending");
+      $('.sort').attr('class', 'sort');
+      $(e.target).find('.sort').addClass("ascending");
     }
   })
 
@@ -93,7 +115,7 @@ $(document).ready(function() {
       })
     })
     gapi.client.sheets.spreadsheets.values.batchUpdate({
-      spreadsheetId: conf.SHEETS_ID,
+      spreadsheetId: conf.SPREADSHEET_ID,
       data: ranges,
       valueInputOption: "RAW"
     }).then((response) => {
@@ -113,7 +135,7 @@ $(document).ready(function() {
       })
     })
     gapi.client.sheets.spreadsheets.values.batchUpdate({
-      spreadsheetId: conf.SHEETS_ID,
+      spreadsheetId: conf.SPREADSHEET_ID,
       data: ranges,
       valueInputOption: "RAW"
     }).then((response) => {
@@ -127,7 +149,7 @@ $(document).ready(function() {
   $(document).on('click', '#info-modal .delete', (e) => {
     if (confirm("Do you wish to delete this applicant?")) {
       gapi.client.sheets.spreadsheets.values.clear({
-        spreadsheetId: conf.SHEETS_ID,
+        spreadsheetId: conf.SPREADSHEET_ID,
         range: "'Parking Permit Application Response'!" + (parseInt($(e.target).closest("#info-modal").attr("data-id"))+1) + ":" + (parseInt($(e.target).closest("#info-modal").attr("data-id"))+1)
       })
     }
@@ -143,6 +165,7 @@ $(document).ready(function() {
   })
 })
 
+// Google OAuth Authorization
 function onLoad() {
   gapi.load('client:auth2', () => {
     $.getJSON("./config.json").then((data) => {
@@ -153,6 +176,7 @@ function onLoad() {
         discoveryDocs: conf.DISCOVERY_DOCS,
         scope: conf.SCOPES
       }).then(function() {
+        $(".loader").remove();
         gapi.signin2.render('login', {
           'theme': 'light',
           'onsuccess': function() {
@@ -166,38 +190,69 @@ function onLoad() {
   });
 }
 
+// Main Initiation
 function init() {
   $("#login-panel").hide();
   $("#admin-panel").show();
-  requestApplicants();
+
   initMap();
+  requestApplicants();
 }
 
+// Queries for applicant data from Google Sheets
 function requestApplicants() {
+  $("<div class='loader'></div>").appendTo("body");
   gapi.client.sheets.spreadsheets.values.get({
-    spreadsheetId: conf.SHEETS_ID,
+    spreadsheetId: conf.SPREADSHEET_ID,
     range: 'Parking Permit Application Response',
   }).then((response) => {
+    var applicant_count = 0;
+    var accepted_count = 0;
+    var seniors_count = 0;
+    var juniors_count = 0;
+    var eligible_count = 0;
+    var ineligible_count = 0;
+    var ev_count = 0;
+
     var range = response.result;
     $('#applications tbody').empty();
     if (range.values.length > 0) {
       for (i = 1; i < range.values.length; i++) {
         var row = range.values[i];
         var column = conf.COLUMN_ID;
-        $('#applications tbody').append("<tr class='applicant " + (row[getColID(column.eligibility)] ? row[getColID(column.eligibility)].toLowerCase() : "") + " " + (row[getColID(column.status)] ? row[getColID(column.status)].toLowerCase() : "") + "' data-row-id='" + (i+1) + "' data-address='" + row[getColID(column.address)] + "'><td class='select'><label><input type='checkbox' class='filled-in'><span></span></label></td><td class='status'>" + (row[getColID(column.status)] ? "<i class='material-icons'>verified_user</i>" : "<i class='material-icons'>remove_circle</i>") + "</td><td class='name'>" + row[getColID(column.firstname)] + " " + row[getColID(column.lastname)] + "</td><td class='class'>" + row[getColID(column.class)] + "</td><td class='email'>" + row[getColID(column.email)] + "</td><td class='eligibility'>" + (row[getColID(column.eligibility)] ? (row[getColID(column.eligibility)] === "Eligible" ? "<i class='material-icons'>verified_user</i>" : "<i class='material-icons'>remove_circle</i>") : "") + "</td></tr>")
+        $('#applications tbody').append("<tr class='applicant " + (row[getColID(column.eligibility)] ? row[getColID(column.eligibility)].toLowerCase() : "") + " " + (row[getColID(column.status)] ? row[getColID(column.status)].toLowerCase() : "") + "' data-row-id='" + (i+1) + "' data-address='" + row[getColID(column.address)] + "' data-ev='" + (row[getColID(column.ev)] === "No." ? "false" : "true") + "'><td class='select'><label><input type='checkbox' class='filled-in'><span></span></label></td><td class='status'>" + (row[getColID(column.status)] ? "<i class='material-icons'>verified_user</i>" : "<i class='material-icons'>remove_circle</i>") + "</td><td class='name'>" + row[getColID(column.firstname)] + " " + row[getColID(column.lastname)] + "</td><td class='class'>" + row[getColID(column.class)] + "</td><td class='email'>" + row[getColID(column.email)] + "</td><td class='eligibility'>" + (row[getColID(column.eligibility)] ? (row[getColID(column.eligibility)] === "Eligible" ? "<i class='material-icons'>verified_user</i>" : "<i class='material-icons'>remove_circle</i>") : "") + "</td></tr>")
+
+        applicant_count++;
+        if (row[getColID(column.status)] === "Accepted") accepted_count++;
+        if (row[getColID(column.class)].includes("2020")) seniors_count++;
+        else juniors_count++;
+        if (row[getColID(column.eligibility)] === "Eligible") eligible_count++;
+        else ineligible_count++;
+        if (row[getColID(column.ev)] != "No.") ev_count++;
       }
       verifyEligibility(false);
+
+      $('.applicant-count').text(applicant_count);
+      $('.accepted-count').text(accepted_count);
+      $('.seniors-count').text(seniors_count);
+      $('.juniors-count').text(juniors_count);
+      $('.eligible-count').text(eligible_count);
+      $('.ineligible-count').text(ineligible_count);
+      $('.ev-count').text(ev_count);
     } else {
       $('#applications tbody').append('<p>No applicants.</p>');
     }
+    $('.sort').attr('class', 'sort');
+    $('.loader').remove();
   }, function(response) {
     $('#applications tbody').append('<p>Error: ' + response.result.error.message + '</p>');
   });
 }
 
+// Edit applicant and update on spreadsheets
 function editApplicant(id, data) {
   gapi.client.sheets.spreadsheets.values.update({
-    spreadsheetId: conf.SHEETS_ID,
+    spreadsheetId: conf.SPREADSHEET_ID,
     range: "'Parking Permit Application Response'!A" + id + ":Z" + id,
     valueInputOption: "RAW",
     resource: {
@@ -211,6 +266,7 @@ function editApplicant(id, data) {
   })
 }
 
+// Verify that applicant is within geocoded boundary
 function verifyEligibility(override) {
   geocoder = new google.maps.Geocoder();
 
@@ -223,7 +279,7 @@ function verifyEligibility(override) {
   checkEligibility(override, boundary, 0);
 }
 
-// Recursively check the geocode to prevent OVER_QUERY_LIMIT
+// Recursively checks the geocode to prevent OVER_QUERY_LIMIT
 function checkEligibility(override, boundary, i) {
   if (i >= $('.applicant').length) {
     if (override) requestApplicants();
@@ -242,13 +298,11 @@ function checkEligibility(override, boundary, i) {
         update($target.attr('data-row-id'), conf.COLUMN_ID.eligibility, eligibility)
         update($target.attr('data-row-id'), conf.COLUMN_ID.lat, result[0].geometry.location.lat());
         update($target.attr('data-row-id'), conf.COLUMN_ID.lng, result[0].geometry.location.lng());
-        // $target.find('.eligibility').text(eligibility);
         $target.removeClass("ineligible");
         $target.removeClass("eligible");
         $target.addClass(eligibility.toLowerCase());
         checkEligibility(override, boundary, i+1);
       } else {
-        console.log(status);
         setTimeout(() => {
           checkEligibility(override, boundary, i);
         }, 1500);
@@ -257,9 +311,10 @@ function checkEligibility(override, boundary, i) {
   }
 }
 
+// Helper Function: update a column with data
 function update(id, column, data) {
   gapi.client.sheets.spreadsheets.values.update({
-    spreadsheetId: conf.SHEETS_ID,
+    spreadsheetId: conf.SPREADSHEET_ID,
     range: "'Parking Permit Application Response'!" + column + id,
     valueInputOption: "RAW",
     resource: {
@@ -270,6 +325,7 @@ function update(id, column, data) {
   })
 }
 
+// Initiate interactive Google Maps under "Overview"
 function initMap() {
   var map = new google.maps.Map(document.getElementById('map'), {
     center: {lat: 37.3866556, lng: -122.1111336},
@@ -285,7 +341,7 @@ function initMap() {
   });
   boundary.setMap(map);
   gapi.client.sheets.spreadsheets.values.get({
-    spreadsheetId: conf.SHEETS_ID,
+    spreadsheetId: conf.SPREADSHEET_ID,
     range: 'Parking Permit Application Response',
   }).then((response) => {
     var range = response.result;
@@ -316,10 +372,6 @@ function initMap() {
           title: row[getColID(column.firstname)] + " " + row[getColID(column.lastname)]
         });
 
-        // marker.addListener('click', () => {
-        //   infoWindow.open(map, marker);
-        // })
-
         google.maps.event.addListener(marker,'click', (function(marker,infowindow) {
           return function() {
             infowindow.open(map,marker);
@@ -331,11 +383,48 @@ function initMap() {
   })
 }
 
+// Helper Function: Get column name by column ID
 function getCol(id) {
   return columns[id];
 }
 
+// Helper Function: Get column ID by column name
 function getColID(str) {
   if (str.length > 1) return;
   return columns.indexOf(str);
+}
+
+// Sort applicants
+function sort(e, order) {
+  var category = $(e.target)[0].className;
+  var sign = order === "ascending" ? 1 : -1;
+  switch (category) {
+    case "status-header":
+      $('#applications tbody > tr').sort(function(a, b) {
+        return sign * ($(a).find('.status > i').text().localeCompare($(b).find('.status > i').text()));
+      }).appendTo('#applications tbody');
+      break;
+    case "name-header":
+      $('#applications tbody > tr').sort(function(a, b) {
+        return sign * ($(a).find('.name').text().localeCompare($(b).find('.name').text()));
+      }).appendTo('#applications tbody');
+      break;
+    case "class-header":
+      $('#applications tbody > tr').sort(function(a, b) {
+        return sign * ($(a).find('.class').text().localeCompare($(b).find('.class').text()));
+      }).appendTo('#applications tbody');
+      break;
+    case "email-header":
+      $('#applications tbody > tr').sort(function(a, b) {
+        return sign * ($(a).find('.class').text().localeCompare($(b).find('.class').text()));
+      }).appendTo('#applications tbody');
+      break;
+    case "eligibility-header":
+      $('#applications tbody > tr').sort(function(a, b) {
+        return sign * ($(a).find('.eligibility > i').text().localeCompare($(b).find('.eligibility > i').text()));
+      }).appendTo('#applications tbody');
+      break;
+    default:
+      break;
+  }
 }

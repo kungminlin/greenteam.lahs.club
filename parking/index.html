@@ -11,6 +11,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
   </head>
   <body>
+    <div class='loader'></div>
     <div id="login-panel" class="valign-wrapper">
       <div id="login"></div>
     </div>
@@ -27,12 +28,12 @@
           <i class="large material-icons black-text">menu</i>
         </a>
         <ul>
-          <li><a onclick="window.location.reload();" class="btn-floating yellow darken-1"><i class="material-icons">exit_to_app</i></a></li>
-          <li><a onclick="requestApplicants();" class="btn-floating green"><i class="material-icons">refresh</i></a></li>
-          <li><a class="btn-floating blue"><i class="material-icons">file_download</i></a></li>
-          <li class='select-action accept' style="display:none;"><a class="btn-floating blue"><i class="material-icons">done</i></a></li>
-          <li class='select-action reject' style="display:none;"><a class="btn-floating blue"><i class="material-icons">do_not_disturb</i></a></li>
-          <li class='select-action delete' style="display:none;"><a class="btn-floating red"><i class="material-icons">delete_forever</i></a></li>
+          <li><a onclick="window.location.reload();" class="btn-floating yellow darken-1 tooltipped" data-position="left" data-tooltip="Sign Out"><i class="material-icons">exit_to_app</i></a></li>
+          <li><a onclick="requestApplicants();" class="btn-floating green tooltipped" data-position="left" data-tooltip="Refresh Applicants"><i class="material-icons">refresh</i></a></li>
+          <li><a class="btn-floating blue tooltipped" data-position="left" data-tooltip="Export CSV"><i class="material-icons">file_download</i></a></li>
+          <li class='select-action accept tooltipped' data-position="left" data-tooltip="Accept Selected" style="display:none;"><a class="btn-floating blue"><i class="material-icons">done</i></a></li>
+          <li class='select-action reject tooltipped' data-position="left" data-tooltip="Reject Selected" style="display:none;"><a class="btn-floating blue"><i class="material-icons">do_not_disturb</i></a></li>
+          <li class='select-action delete tooltipped' data-position="left" data-tooltip="Delete Selected" style="display:none;"><a class="btn-floating red"><i class="material-icons">delete_forever</i></a></li>
         </ul>
       </div>
 
@@ -41,11 +42,11 @@
           <thead>
             <tr>
               <th>Select</th>
-              <th>Status</th>
-              <th>Name</th>
-              <th>Class</th>
-              <th>Email</th>
-              <th>Eligibility</th>
+              <th class="status-header">Status <span class="sort"></span></th>
+              <th class="name-header">Name <span class="sort"></span></th>
+              <th class="class-header">Class <span class="sort"></span></th>
+              <th class="email-header">Email <span class="sort"></span></th>
+              <th class="eligibility-header">Eligibility <span class="sort"></span></th>
             </tr>
           </thead>
           <tbody>
@@ -129,6 +130,15 @@
       <div id="overview" class="panel col s12">
         <div class="row" style="margin-bottom:0">
           <div id="map"></div>
+          <div id="info-panel">
+            <p><b>Applicant Count</b>: <span class='applicant-count'></span></p>
+            <p><b>Number Accepted</b>: <span class='accepted-count'></span></p>
+            <p><b>Seniors</b>: <span class='seniors-count'></span></p>
+            <p><b>Juniors</b>: <span class='juniors-count'></span></p>
+            <p><b>Number Eligible</b>: <span class='eligible-count'></span></p>
+            <p><b>Number Ineligible</b>: <span class='ineligible-count'></span></p>
+            <p><b>Electric Vehicles</b>: <span class='ev-count'></span></p>
+          </div>
         </div>
       </div>
     </div>

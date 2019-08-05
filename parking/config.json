@@ -3,7 +3,8 @@
   "SCOPES": "https://www.googleapis.com/auth/spreadsheets",
   "API_KEY": "AIzaSyCfJeXBhon-wq1ja2DtqB--yqJ4o-8MBiM",
   "CLIENT_ID": "1087687977785-e70ohfp7urv0hjthc81gl7kbhd0fr4j9.apps.googleusercontent.com",
-  "SHEETS_ID": "198eLJwsnq1SYm7u7MoSulSwDfyleg8R6leetDg0bJpQ",
+  "SPREADSHEET_ID": "198eLJwsnq1SYm7u7MoSulSwDfyleg8R6leetDg0bJpQ",
+  "SHEETS_ID": 87936429,
   "COLUMN_ID": {
     "timestamp": "A",
     "email": "B",
