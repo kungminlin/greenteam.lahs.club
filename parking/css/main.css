@@ -114,7 +114,7 @@
   }
 
 .loader {
-  position: absolute;
+  position: fixed;
   z-index: 999;
   left: 50vw;
   top: 50vh;

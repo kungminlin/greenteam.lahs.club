@@ -3,6 +3,32 @@ const columns = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 let geocoder, map;
 let selected = [];
+let anomalies = [];
+
+const Anomaly = {
+  ADDRESS_NOT_EXIST: 1,
+  NO_AGREEMENT: 2,
+  ID_FORMAT: 3,
+  MVLA_EMAIL_FORMAT: 4,
+  properties: {
+    1: {
+      name: "address_not_exist",
+      desc: "The street address either does not exist, or is too vague for the applicant's eligibility to be classified."
+    },
+    2: {
+      name: "no_agreement",
+      desc: "The applicant has refused to comply with the Parking Permit rules."
+    },
+    3: {
+      name: "id_format",
+      desc: "The ID number of the applicant is formatted incorrectly."
+    },
+    4: {
+      name: "mvla_email_format",
+      desc: "The MVLA email of the applicant is formatted incorrectly."
+    }
+  }
+}
 
 $(document).ready(function() {
   M.AutoInit();
@@ -71,6 +97,21 @@ $(document).ready(function() {
     })
   })
 
+  $(document).on('click', '.warning', (e) => {
+    var error = "";
+    var anomaly = anomalies.find(entry => entry.id == $(e.target).closest('.applicant').attr('data-row-id')).errors;
+    if (anomaly.length === 1) {
+      error = Anomaly.properties[anomaly[0]].name + ": " + Anomaly.properties[anomaly[0]].desc;
+    } else {
+      error = "<ol>"
+      anomaly.forEach((a) => {
+        error += "<li>" + Anomaly.properties[a].name + ": " + Anomaly.properties[a].desc + "</li>";
+      })
+      error += "</ol>"
+    }
+    M.toast({html: "<i class='material-icons' style='margin-left:0;margin-right:10px;'>error</i>" + error})
+  })
+
   $(document).on('click', '#info-modal .edit', (e) => {
     $("#edit-modal").attr("data-id", $("#info-modal").attr("data-id"));
     $("#info-modal li").each((e, target) => {
@@ -103,6 +144,7 @@ $(document).ready(function() {
         spreadsheetId: conf.SPREADSHEET_ID,
         requests: requests
       }).then((response) => {
+        anomalies = [];
         $('.select input').each((index, e) => {e.checked = false})
         M.toast({html: selected.length + " applicants have been deleted."});
         resetSelected();
@@ -112,6 +154,20 @@ $(document).ready(function() {
         signout();
       })
     }
+  })
+
+  $('.export-selected').click((e) => {
+    $("#export-modal").attr('data-mode', 'selected');
+    M.Modal.getInstance($("#export-modal")).open();
+  })
+
+  $('.export-accepted').click((e) => {
+    $("#export-modal").attr('data-mode', 'accepted');
+    M.Modal.getInstance($("#export-modal")).open();
+  })
+
+  $('.export').click((e) => {
+    $("#export-modal")
   })
 
   $('th').not('.select-header').click((e) => {
@@ -189,6 +245,7 @@ $(document).ready(function() {
           }
         }]
       }).then((response) => {
+        anomalies = []
         M.toast({html: '1 applicant has been deleted.'})
         M.Modal.getInstance($("#info-modal")).close();
         requestApplicants();
@@ -199,7 +256,7 @@ $(document).ready(function() {
     }
   })
 
-  $(document).on('click', '#edit-modal .modal-close', (e) => {
+  $(document).on('click', '#edit-modal .confirm', (e) => {
     var formdata = new FormData($("#edit-modal form")[0]);
     let data = new Array(26);
     formdata.forEach((value, key) => {
@@ -273,17 +330,20 @@ function requestApplicants() {
       for (i = 1; i < range.values.length; i++) {
         var row = range.values[i];
         var column = conf.PROPERTIES;
-        if (row[getColID(column.agree.column_id)].includes("Yes")) {
-          $('#applications tbody').append("<tr class='applicant " + (row[getColID(column.eligibility.column_id)] ? row[getColID(column.eligibility.column_id)].toLowerCase() : "") + " " + (row[getColID(column.status.column_id)] ? row[getColID(column.status.column_id)].toLowerCase() : "") + "' data-row-id='" + (i+1) + "' data-address='" + row[getColID(column.address.column_id)] + "' data-ev='" + (row[getColID(column.ev.column_id)] === "No." ? "false" : "true") + "'><td class='select'><label><input type='checkbox' class='filled-in'><span></span></label></td><td class='status'>" + (row[getColID(column.status.column_id)] ? "<i class='material-icons'>verified_user</i>" : "<i class='material-icons'>remove_circle</i>") + "</td><td class='name'>" + row[getColID(column.firstname.column_id)] + " " + row[getColID(column.lastname.column_id)] + "</td><td class='class'>" + row[getColID(column.class.column_id)] + "</td><td class='email'>" + row[getColID(column.email.column_id)] + "</td><td class='eligibility'>" + (row[getColID(column.eligibility.column_id)] ? (row[getColID(column.eligibility.column_id)] === "Eligible" ? "<i class='material-icons'>verified_user</i>" : "<i class='material-icons'>remove_circle</i>") : "") + "</td></tr>")
+        $('#applications tbody').append("<tr class='applicant " + (row[getColID(column.eligibility.column_id)] ? row[getColID(column.eligibility.column_id)].toLowerCase() : "") + " " + (row[getColID(column.status.column_id)] ? row[getColID(column.status.column_id)].toLowerCase() : "") + "' data-row-id='" + (i+1) + "' data-address='" + row[getColID(column.address.column_id)] + "' data-ev='" + (row[getColID(column.ev.column_id)] === "No." ? "false" : "true") + "'><td class='select'><label><input type='checkbox' class='filled-in'><span></span></label></td><td class='status'>" + (row[getColID(column.status.column_id)] ? "<i class='material-icons'>verified_user</i>" : "<i class='material-icons'>remove_circle</i>") + "</td><td class='name'>" + row[getColID(column.firstname.column_id)] + " " + row[getColID(column.lastname.column_id)] + "</td><td class='class'>" + row[getColID(column.class.column_id)] + "</td><td class='email'>" + row[getColID(column.email.column_id)] + "</td><td class='eligibility'>" + (row[getColID(column.eligibility.column_id)] ? (row[getColID(column.eligibility.column_id)] === "Eligible" ? "<i class='material-icons'>verified_user</i>" : "<i class='material-icons'>remove_circle</i>") : "") + "</td></tr>")
 
-          applicant_count++;
-          if (row[getColID(column.status.column_id)] === "Accepted") accepted_count++;
-          if (row[getColID(column.class.column_id)].includes("2020")) seniors_count++;
-          else juniors_count++;
-          if (row[getColID(column.eligibility.column_id)] === "Eligible") eligible_count++;
-          else ineligible_count++;
-          if (row[getColID(column.ev.column_id)] != "No.") ev_count++;
-        }
+        applicant_count++;
+        if (row[getColID(column.status.column_id)] === "Accepted") accepted_count++;
+        if (row[getColID(column.class.column_id)].includes("2020")) seniors_count++;
+        else juniors_count++;
+        if (row[getColID(column.eligibility.column_id)] === "Eligible") eligible_count++;
+        else ineligible_count++;
+        if (row[getColID(column.ev.column_id)] != "No.") ev_count++;
+
+        // Check for Anomalies
+        if (!row[getColID(column.agree.column_id)].includes("Yes")) reportAnomaly(i+1, Anomaly.NO_AGREEMENT);
+        if ((row[getColID(column.lahs_id.column_id)] + "").length != 5) reportAnomaly(i+1, Anomaly.ID_FORMAT);
+        if (!row[getColID(column.mvla_email.column_id)].match("(1000)[0-9]{5}(@mvla.net)")) reportAnomaly(i+1, Anomaly.MVLA_EMAIL_FORMAT);
       }
       verifyEligibility(false);
 
@@ -294,9 +354,12 @@ function requestApplicants() {
       $('.eligible-count').text(eligible_count);
       $('.ineligible-count').text(ineligible_count);
       $('.ev-count').text(ev_count);
+
+      updateWarning();
     } else {
       $('#applications tbody').append('<p>No applicants.</p>');
     }
+
     $('.sort').attr('class', 'sort');
     $('.loader').remove();
     resetSelected();
@@ -355,10 +418,15 @@ function checkEligibility(override, boundary, i) {
     $target = $($('.applicant')[i])
     geocoder.geocode({'address': $target.attr('data-address')}, (result, status) => {
       if (status === "OK") {
+        if (!result[0].types.includes("street_address") && !result[0].types.includes("premise")) {
+          reportAnomaly($target.attr('data-row-id'), Anomaly.ADDRESS_NOT_EXIST)
+          checkEligibility(override, boundary, i+1);
+          return;
+        }
         $target = $($('.applicant')[i]);
         var latLng = new google.maps.LatLng(result[0].geometry.location.lat(), result[0].geometry.location.lng());
         var eligibility = google.maps.geometry.poly.containsLocation(latLng, boundary) ? "Ineligible" : "Eligible";
-        update($target.attr('data-row-id'), conf.PROPERTIES.eligibility.column_id, eligibility)
+        update($target.attr('data-row-id'), conf.PROPERTIES.eligibility.column_id, eligibility);
         update($target.attr('data-row-id'), conf.PROPERTIES.lat.column_id, result[0].geometry.location.lat());
         update($target.attr('data-row-id'), conf.PROPERTIES.lng.column_id, result[0].geometry.location.lng());
         $target.removeClass("ineligible");
@@ -366,9 +434,7 @@ function checkEligibility(override, boundary, i) {
         $target.addClass(eligibility.toLowerCase());
         checkEligibility(override, boundary, i+1);
       } else {
-        setTimeout(() => {
-          checkEligibility(override, boundary, i);
-        }, 1500);
+        setTimeout(() => checkEligibility(override, boundary, i), 1500);
       }
     })
   }
@@ -383,10 +449,7 @@ function update(id, column, data) {
     resource: {
       values: [[data]]
     }
-  }).catch((error) => {
-    console.log(error);
-    signout();
-  })
+  }).then()
 }
 
 // Initiate interactive Google Maps under "Overview"
@@ -469,6 +532,51 @@ function resetSelected() {
   $('.select input').prop('checked', false);
 }
 
+// Helper Function: Export to CSV
+function exportCSV(properties, mode) {
+  if (properties.length <= 0 ||
+      (mode === "selected" && selected.length == 0) ||
+      (mode === "accepted" && parseInt($('.accepted-count').text()) == 0)) {
+        M.toast({html: "Error: Nothing to export."})
+        return;
+      }
+  gapi.client.sheets.spreadsheets.values.get({
+    spreadsheetId: conf.SPREADSHEET_ID,
+    range: 'Parking Permit Application Response',
+  }).then((response) => {
+    var rows = [[]];
+    properties.forEach((prop) => rows[0].push(conf.PROPERTIES[prop].name))
+
+    var range = response.result;
+    for (i = 1; i < range.values.length; i++) {
+      var row = range.values[i];
+      var column = conf.PROPERTIES
+
+      if (mode === "selected") {
+        if (selected.includes(i+1)) {
+          values = [];
+          properties.forEach((prop) => {
+            values.push(row[getColID(column[prop].column_id)]);
+          })
+          rows.push(values);
+        }
+      } else {
+        if (row[getColID(column['status'].column_id)] === "Accepted") {
+          values = [];
+          properties.forEach((prop) => {
+            values.push(row[getColID(column[prop].column_id)]);
+          })
+          rows.push(values);
+        }
+      }
+    }
+    console.log(rows);
+    let csvContent = "data:text/csv;charset=utf-8," + rows.map(e => e.join(",")).join("\n");
+    var encodedUri = encodeURI(csvContent);
+    window.open(encodedUri)
+  })
+}
+
 // Sort applicants
 function sort(e, order) {
   var category = $(e.target).closest("th")[0].className;
@@ -517,6 +625,27 @@ function setupExportModal() {
   })
   $(columnOne).appendTo('#export-options > div:eq(0)');
   $(columnTwo).appendTo('#export-options > div:eq(1)');
+}
+
+function reportAnomaly(id, anomaly) {
+  if (anomalies.findIndex(e => e.id == id) === -1) {
+    anomalies.push({
+      id: id,
+      errors: [anomaly]
+    })
+  } else {
+    report = anomalies.find(e => e.id == id);
+    if (report.errors.includes(anomaly)) return;
+    else report.errors.push(anomaly);
+  }
+}
+
+function updateWarning() {
+  anomalies.forEach((anomaly) => {
+    $('tr.applicant[data-row-id="' + anomaly.id + '"]')
+      .addClass('invalid')
+      .find('.select').html("<a class='warning btn-floating pulse amber lighten-1'><i class='material-icons'>feedback</i></a>");
+  });
 }
 
 // Open Spreadsheet
