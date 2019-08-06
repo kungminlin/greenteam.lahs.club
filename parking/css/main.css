@@ -35,6 +35,10 @@
     background-color: #2196F3;
   }
 
+#select-actions > a {
+  cursor: default;
+}
+
 .applicant > .status, .applicant > .name, .applicant > .class, .applicant > .email, .applicant > .eligibility {
   cursor: pointer;
 }
@@ -101,6 +105,13 @@
 .options .button {
   display: block !important;
 }
+
+.export-prop {
+  list-style-type: none;
+}
+  .export-prop span {
+    display: inline !important;
+  }
 
 .loader {
   position: absolute;

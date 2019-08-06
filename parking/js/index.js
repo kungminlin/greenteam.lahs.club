@@ -2,7 +2,7 @@ let conf;
 const columns = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 let geocoder, map;
-let selected;
+let selected = [];
 
 $(document).ready(function() {
   M.AutoInit();
@@ -23,6 +23,18 @@ $(document).ready(function() {
       lastChecked = $target;
   });
 
+  $('.select-header input').on('change', (e) => {
+    if ($('.select-header input')[0].checked) {
+      $('.applicant').each((index, applicant) => {
+        selected.push($(applicant).attr('data-row-id'))
+      })
+      $('.select input').prop('checked', true);
+      $('.select-action').show();
+    } else {
+      resetSelected();
+    }
+  })
+
   $(document).on('change', '.select input', (e) => {
     selected = [];
     $('.select input').each((index, e) => {
@@ -31,37 +43,38 @@ $(document).ready(function() {
       }
     })
     if (selected.length > 0) {
-      $('.applicant').css({'background-color': 'white'});
       $('.select-action').show();
       $('.select-header input').prop('checked', true);
     } else {
-      $('.applicant').css({'background-color': ''});
-      $('.select-action').hide();
-      $('.select-header input').prop('checked', false);
+      resetSelected()
     }
   })
 
   $(document).on('click', '.status, .name, .class, .email, .eligibility', (e) => {
+    $("<div class='loader'></div>").appendTo("body");
     gapi.client.sheets.spreadsheets.values.get({
       spreadsheetId: conf.SPREADSHEET_ID,
       range: 'Parking Permit Application Response'
     }).then((response) => {
       var row = response.result.values[parseInt($(e.target).closest('.applicant').attr('data-row-id')) - 1];
       $("#info-modal ul").empty();
-      Object.keys(conf.COLUMN_ID).forEach((key) => {
-        $("#info-modal ul").append("<li class='" + key + "'><b>" + key + "</b>: " + row[getColID(conf.COLUMN_ID[key])] + "</li>");
+      Object.keys(conf.PROPERTIES).forEach((key) => {
+        $("#info-modal ul").append("<li class='" + key + "'><b>" + conf.PROPERTIES[key].name + "</b>: " + row[getColID(conf.PROPERTIES[key].column_id)] + "</li>");
       })
       $("#info-modal").attr('data-id', $(e.target).closest('.applicant').attr('data-row-id'));
+
+      $('.loader').remove();
       M.Modal.getInstance($("#info-modal")).open();
     }).catch((error) => {
       console.log(error);
+      signout();
     })
   })
 
   $(document).on('click', '#info-modal .edit', (e) => {
     $("#edit-modal").attr("data-id", $("#info-modal").attr("data-id"));
     $("#info-modal li").each((e, target) => {
-      var key = $(target).text().split(": ")[0];
+      var key = $(target)[0].className;
       var value = $(target).text().split(": ")[1];
       $('#edit-modal #' + key).val(value);
     })
@@ -92,10 +105,11 @@ $(document).ready(function() {
       }).then((response) => {
         $('.select input').each((index, e) => {e.checked = false})
         M.toast({html: selected.length + " applicants have been deleted."});
-        selected = [];
+        resetSelected();
         requestApplicants();
       }).catch((error) => {
         console.log(error);
+        signout();
       })
     }
   })
@@ -116,7 +130,7 @@ $(document).ready(function() {
     var ranges = [];
     selected.forEach((id) => {
       ranges.push({
-        "range": "'Parking Permit Application Response'!" + conf.COLUMN_ID.status + id,
+        "range": "'Parking Permit Application Response'!" + conf.PROPERTIES.status.column_id + id,
         "values": [["Accepted"]]
       })
     })
@@ -127,10 +141,11 @@ $(document).ready(function() {
     }).then((response) => {
       $('.select input').each((index, e) => {e.checked = false})
       M.toast({html: selected.length + " applicants have been accepted."});
-      selected = [];
+      resetSelected();
       requestApplicants();
     }).catch((error) => {
       console.log(error);
+      signout();
     })
   })
 
@@ -138,7 +153,7 @@ $(document).ready(function() {
     var ranges = [];
     selected.forEach((id) => {
       ranges.push({
-        "range": "'Parking Permit Application Response'!" + conf.COLUMN_ID.status + id,
+        "range": "'Parking Permit Application Response'!" + conf.PROPERTIES.status.column_id + id,
         "values": [[""]]
       })
     })
@@ -149,10 +164,11 @@ $(document).ready(function() {
     }).then((response) => {
       $('.select input').each((index, e) => {e.checked = false})
       M.toast({html: selected.length + " applicants have been rejected."});
-      selected = [];
+      resetSelected();
       requestApplicants();
     }).catch((error) => {
       console.log(error);
+      signout();
     })
   })
 
@@ -178,6 +194,7 @@ $(document).ready(function() {
         requestApplicants();
       }).catch((error) => {
         console.log(response);
+        signout();
       })
     }
   })
@@ -186,7 +203,7 @@ $(document).ready(function() {
     var formdata = new FormData($("#edit-modal form")[0]);
     let data = new Array(26);
     formdata.forEach((value, key) => {
-      data[getColID(conf.COLUMN_ID[key])] = value;
+      data[getColID(conf.PROPERTIES[key].column_id)] = value;
     });
     editApplicant($("#edit-modal").attr("data-id"), data);
   })
@@ -216,6 +233,7 @@ function onLoad() {
             }
           })
         }
+        setupExportModal();
       }).catch((error) => {
         console.log(error);
       })
@@ -254,16 +272,18 @@ function requestApplicants() {
     if (range.values.length > 0) {
       for (i = 1; i < range.values.length; i++) {
         var row = range.values[i];
-        var column = conf.COLUMN_ID;
-        $('#applications tbody').append("<tr class='applicant " + (row[getColID(column.eligibility)] ? row[getColID(column.eligibility)].toLowerCase() : "") + " " + (row[getColID(column.status)] ? row[getColID(column.status)].toLowerCase() : "") + "' data-row-id='" + (i+1) + "' data-address='" + row[getColID(column.address)] + "' data-ev='" + (row[getColID(column.ev)] === "No." ? "false" : "true") + "'><td class='select'><label><input type='checkbox' class='filled-in'><span></span></label></td><td class='status'>" + (row[getColID(column.status)] ? "<i class='material-icons'>verified_user</i>" : "<i class='material-icons'>remove_circle</i>") + "</td><td class='name'>" + row[getColID(column.firstname)] + " " + row[getColID(column.lastname)] + "</td><td class='class'>" + row[getColID(column.class)] + "</td><td class='email'>" + row[getColID(column.email)] + "</td><td class='eligibility'>" + (row[getColID(column.eligibility)] ? (row[getColID(column.eligibility)] === "Eligible" ? "<i class='material-icons'>verified_user</i>" : "<i class='material-icons'>remove_circle</i>") : "") + "</td></tr>")
+        var column = conf.PROPERTIES;
+        if (row[getColID(column.agree.column_id)].includes("Yes")) {
+          $('#applications tbody').append("<tr class='applicant " + (row[getColID(column.eligibility.column_id)] ? row[getColID(column.eligibility.column_id)].toLowerCase() : "") + " " + (row[getColID(column.status.column_id)] ? row[getColID(column.status.column_id)].toLowerCase() : "") + "' data-row-id='" + (i+1) + "' data-address='" + row[getColID(column.address.column_id)] + "' data-ev='" + (row[getColID(column.ev.column_id)] === "No." ? "false" : "true") + "'><td class='select'><label><input type='checkbox' class='filled-in'><span></span></label></td><td class='status'>" + (row[getColID(column.status.column_id)] ? "<i class='material-icons'>verified_user</i>" : "<i class='material-icons'>remove_circle</i>") + "</td><td class='name'>" + row[getColID(column.firstname.column_id)] + " " + row[getColID(column.lastname.column_id)] + "</td><td class='class'>" + row[getColID(column.class.column_id)] + "</td><td class='email'>" + row[getColID(column.email.column_id)] + "</td><td class='eligibility'>" + (row[getColID(column.eligibility.column_id)] ? (row[getColID(column.eligibility.column_id)] === "Eligible" ? "<i class='material-icons'>verified_user</i>" : "<i class='material-icons'>remove_circle</i>") : "") + "</td></tr>")
 
-        applicant_count++;
-        if (row[getColID(column.status)] === "Accepted") accepted_count++;
-        if (row[getColID(column.class)].includes("2020")) seniors_count++;
-        else juniors_count++;
-        if (row[getColID(column.eligibility)] === "Eligible") eligible_count++;
-        else ineligible_count++;
-        if (row[getColID(column.ev)] != "No.") ev_count++;
+          applicant_count++;
+          if (row[getColID(column.status.column_id)] === "Accepted") accepted_count++;
+          if (row[getColID(column.class.column_id)].includes("2020")) seniors_count++;
+          else juniors_count++;
+          if (row[getColID(column.eligibility.column_id)] === "Eligible") eligible_count++;
+          else ineligible_count++;
+          if (row[getColID(column.ev.column_id)] != "No.") ev_count++;
+        }
       }
       verifyEligibility(false);
 
@@ -279,10 +299,13 @@ function requestApplicants() {
     }
     $('.sort').attr('class', 'sort');
     $('.loader').remove();
+    resetSelected();
   }, function(response) {
-    $('#applications tbody').append('<p>Error: ' + response.result.error.message + '</p>');
+    console.log('<p>Error: ' + response.result.error.message + '</p>');
+    signout();
   }).catch((error) => {
     console.log(error);
+    signout();
   })
 }
 
@@ -302,6 +325,7 @@ function editApplicant(id, data) {
     }
   }).catch((error) => {
     console.log(error);
+    signout();
   })
 }
 
@@ -334,9 +358,9 @@ function checkEligibility(override, boundary, i) {
         $target = $($('.applicant')[i]);
         var latLng = new google.maps.LatLng(result[0].geometry.location.lat(), result[0].geometry.location.lng());
         var eligibility = google.maps.geometry.poly.containsLocation(latLng, boundary) ? "Ineligible" : "Eligible";
-        update($target.attr('data-row-id'), conf.COLUMN_ID.eligibility, eligibility)
-        update($target.attr('data-row-id'), conf.COLUMN_ID.lat, result[0].geometry.location.lat());
-        update($target.attr('data-row-id'), conf.COLUMN_ID.lng, result[0].geometry.location.lng());
+        update($target.attr('data-row-id'), conf.PROPERTIES.eligibility.column_id, eligibility)
+        update($target.attr('data-row-id'), conf.PROPERTIES.lat.column_id, result[0].geometry.location.lat());
+        update($target.attr('data-row-id'), conf.PROPERTIES.lng.column_id, result[0].geometry.location.lng());
         $target.removeClass("ineligible");
         $target.removeClass("eligible");
         $target.addClass(eligibility.toLowerCase());
@@ -361,6 +385,7 @@ function update(id, column, data) {
     }
   }).catch((error) => {
     console.log(error);
+    signout();
   })
 }
 
@@ -388,16 +413,16 @@ function initMap() {
     if (range.values.length > 0) {
       for (i = 1; i < range.values.length; i++) {
         var row = range.values[i];
-        var column = conf.COLUMN_ID
+        var column = conf.PROPERTIES
         var details = "";
         Object.keys(column).forEach((key) => {
-          details += "<p><b>" + key + "</b>: " + row[getColID(column[key])] + "</p>";
+          details += "<p><b>" + column[key].name + "</b>: " + row[getColID(column[key].column_id)] + "</p>";
         })
 
         var contentString = '<div id="content">'+
       '<div id="siteNotice">'+
       '</div>'+
-      '<h4 id="firstHeading" class="firstHeading">' + row[getColID(column.firstname)] + " " + row[getColID(column.lastname)] + '</h4>'+
+      '<h4 id="firstHeading" class="firstHeading">' + row[getColID(column.firstname.column_id)] + " " + row[getColID(column.lastname.column_id)] + '</h4>'+
       '<div id="bodyContent">'+
       details
       '</div>'+
@@ -406,9 +431,9 @@ function initMap() {
         var infowindow = new google.maps.InfoWindow({content: contentString});
 
         var marker = new google.maps.Marker({
-          position: {lat: parseFloat(row[getColID(column.lat)]), lng: parseFloat(row[getColID(column.lng)])},
+          position: {lat: parseFloat(row[getColID(column.lat.column_id)]), lng: parseFloat(row[getColID(column.lng.column_id)])},
           map: map,
-          title: row[getColID(column.firstname)] + " " + row[getColID(column.lastname)]
+          title: row[getColID(column.firstname.column_id)] + " " + row[getColID(column.lastname.column_id)]
         });
 
         google.maps.event.addListener(marker,'click', (function(marker,infowindow) {
@@ -421,6 +446,7 @@ function initMap() {
     }
   }).catch((error) => {
     console.log(error);
+    signout();
   })
 }
 
@@ -433,6 +459,14 @@ function getCol(id) {
 function getColID(str) {
   if (str.length > 1) return;
   return columns.indexOf(str);
+}
+
+// Helper Function: Reset Selected
+function resetSelected() {
+  selected = [];
+  $('.select-action').hide();
+  $('.select-header input').prop('checked', false);
+  $('.select input').prop('checked', false);
 }
 
 // Sort applicants
@@ -468,6 +502,21 @@ function sort(e, order) {
     default:
       break;
   }
+}
+
+function setupExportModal() {
+  var columnOne = "";
+  var columnTwo = "";
+  var count = 0;
+  Object.entries(conf.PROPERTIES).forEach((property) => {
+    if (count++ < Object.keys(conf.PROPERTIES).length / 2) {
+      columnOne += "<li class='export-prop'><label><input type='checkbox' class='filled-in' data-property='" + property[0] + "'><span>" + property[1].name + "</span></label></li>";
+    } else {
+      columnTwo += "<li class='export-prop'><label><input type='checkbox' class='filled-in' data-property='" + property[0] + "'><span>" + property[1].name + "</span></label></li>";
+    }
+  })
+  $(columnOne).appendTo('#export-options > div:eq(0)');
+  $(columnTwo).appendTo('#export-options > div:eq(1)');
 }
 
 // Open Spreadsheet
