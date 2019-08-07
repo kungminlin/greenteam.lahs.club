@@ -6,6 +6,15 @@
 </head>
 <body>
   <script>
+    function Deferred() {
+      var self = this;
+      this.promise = new Promise(function(resolve, reject) {
+        self.reject = reject;
+        self.resolve = resolve;
+      })
+    }
+    window.fbLoaded = (new Deferred());
+
     window.fbAsyncInit = function() {
       FB.init({
         appId      : '502901450516172',
@@ -14,6 +23,7 @@
         version    : 'v4.0'
       });
 
+      fbLoaded.resolve();
       FB.AppEvents.logPageView();
     };
 
@@ -25,18 +35,20 @@
        fjs.parentNode.insertBefore(js, fjs);
      }(document, 'script', 'facebook-jssdk'));
 
-     FB.getLoginStatus(function(response) {
-       console.log(response);
-       if (response) {
-         FB.login(function(status) {
-           if (status.status === "connected") {
-             localStorage.accessToken = status.authResponse.accessToken;
-             console.log(localStorage.accessToken)
-           }
-         });
-       } else {
-         // console.log(response);
-       }
+     fbLoaded.promise.then(() => {
+       FB.getLoginStatus(function(response) {
+         console.log(response);
+         if (response) {
+           FB.login(function(status) {
+             if (status.status === "connected") {
+               localStorage.accessToken = status.authResponse.accessToken;
+               console.log(localStorage.accessToken)
+             }
+           });
+         } else {
+           // console.log(response);
+         }
+       })
      })
 
   </script>
