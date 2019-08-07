@@ -38,7 +38,7 @@
      fbLoaded.promise.then(() => {
        FB.getLoginStatus(function(response) {
          console.log(response);
-         if (response) {
+         if (response.status === "unknown") {
            FB.login(function(status) {
              if (status.status === "connected") {
                localStorage.accessToken = status.authResponse.accessToken;
