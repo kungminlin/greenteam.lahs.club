@@ -15,7 +15,6 @@
       });
 
       FB.AppEvents.logPageView();
-
     };
 
     (function(d, s, id){
@@ -25,6 +24,20 @@
        js.src = "https://connect.facebook.net/en_US/sdk.js";
        fjs.parentNode.insertBefore(js, fjs);
      }(document, 'script', 'facebook-jssdk'));
+
+     FB.getLoginStatus(function(response) {
+       console.log(response);
+       if (response) {
+         FB.login(function(status) {
+           if (status.status === "connected") {
+             localStorage.accessToken = status.authResponse.accessToken;
+             console.log(localStorage.accessToken)
+           }
+         });
+       } else {
+         // console.log(response);
+       }
+     })
 
   </script>
   <script async defer src="https://connect.facebook.net/en_US/sdk.js"></script>
