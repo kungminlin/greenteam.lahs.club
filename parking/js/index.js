@@ -536,8 +536,8 @@ function resetSelected() {
 
 // Helper Function: Export to CSV
 function exportCSV(properties, mode) {
-  if (properties.length <= 0 &&
-      (mode === "selected" && selected.length == 0) &&
+  if (properties.length <= 0 ||
+      (mode === "selected" && selected.length == 0) ||
       (mode === "accepted" && parseInt($('.accepted-count').text()) == 0)) {
         M.toast({html: "Error: Nothing to export."})
         return;
@@ -555,8 +555,6 @@ function exportCSV(properties, mode) {
       var column = conf.PROPERTIES
 
       if (mode === "selected") {
-        console.log(selected);
-        console.log(i);
         if (selected.includes(i+1 + "")) {
           values = [];
           properties.forEach((prop) => {
@@ -574,7 +572,6 @@ function exportCSV(properties, mode) {
         }
       }
     }
-    console.log(rows);
     var csvContent = "data:text/csv;charset=utf-8," + rows.map(e => e.join(",")).join("\n");
 
     var link = document.createElement('a');

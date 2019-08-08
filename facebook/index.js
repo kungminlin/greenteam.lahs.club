@@ -9,6 +9,7 @@ function statusChangeCallback(response) {
         localStorage.accessToken = status.authResponse.accessToken;
         console.log(localStorage.accessToken)
 
+        console.log('hi');
         FB.api('/search?q=NCal.GroupBuying&type=group', (response) => {
           console.log(response);
         })
