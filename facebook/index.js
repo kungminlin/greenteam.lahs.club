@@ -8,6 +8,10 @@ function statusChangeCallback(response) {
       if (status.status === "connected") {
         localStorage.accessToken = status.authResponse.accessToken;
         console.log(localStorage.accessToken)
+
+        FB.api('/search?q=NCal.GroupBuying&type=group', (response) => {
+          console.log(response);
+        })
       }
     });
   }
