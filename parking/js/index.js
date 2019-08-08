@@ -167,7 +167,9 @@ $(document).ready(function() {
   })
 
   $('.export').click((e) => {
-    $("#export-modal")
+    var properties = [];
+    $('.export-prop input:checked').each((i, e) => properties.push($(e).attr('data-property')))
+    exportCSV(properties, $("#export-modal").attr('data-mode'));
   })
 
   $('th').not('.select-header').click((e) => {
@@ -534,8 +536,8 @@ function resetSelected() {
 
 // Helper Function: Export to CSV
 function exportCSV(properties, mode) {
-  if (properties.length <= 0 ||
-      (mode === "selected" && selected.length == 0) ||
+  if (properties.length <= 0 &&
+      (mode === "selected" && selected.length == 0) &&
       (mode === "accepted" && parseInt($('.accepted-count').text()) == 0)) {
         M.toast({html: "Error: Nothing to export."})
         return;
@@ -553,7 +555,9 @@ function exportCSV(properties, mode) {
       var column = conf.PROPERTIES
 
       if (mode === "selected") {
-        if (selected.includes(i+1)) {
+        console.log(selected);
+        console.log(i);
+        if (selected.includes(i+1 + "")) {
           values = [];
           properties.forEach((prop) => {
             values.push(row[getColID(column[prop].column_id)]);
@@ -571,9 +575,12 @@ function exportCSV(properties, mode) {
       }
     }
     console.log(rows);
-    let csvContent = "data:text/csv;charset=utf-8," + rows.map(e => e.join(",")).join("\n");
-    var encodedUri = encodeURI(csvContent);
-    window.open(encodedUri)
+    var csvContent = "data:text/csv;charset=utf-8," + rows.map(e => e.join(",")).join("\n");
+
+    var link = document.createElement('a');
+    link.download = "parking-permit-data.csv";
+    link.href = csvContent;
+    link.click();
   })
 }
 
