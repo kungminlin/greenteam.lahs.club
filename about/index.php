@@ -7,6 +7,10 @@
 <html>
 	<head>
 		<title>About - LAHS Green Team</title>
+		<meta name="description" content="We are a dedicated group of students focused on fostering a culture of environmental responsibility at Los Altos High School and in the local community through organizing outreach activities and events.">
+		<meta name="keywords" content="LAHS Green Team,Environment,Environmental Organization,Environmentalism,Be Green Not Mean,Los Altos High School,Green Team,Environmental Conservation">
+		<meta name="author" content="Kung-Min Lin">
+
 		<link rel="shortcut icon" href="/images/favicon.png" />
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />

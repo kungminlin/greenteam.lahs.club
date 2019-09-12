@@ -7,6 +7,10 @@
 <html>
 	<head>
 		<title>Events - LAHS Green Team</title>
+		<meta name="description" content="Events hosted by the LAHS Green Team to promote sustainability and raise environmental awareness.">
+		<meta name="keywords" content="LAHS Green Team,Environment,Environmental Organization,Environmentalism,Be Green Not Mean,Los Altos High School,Green Team,Environmental Conservation">
+		<meta name="author" content="Kung-Min Lin">
+
 		<link rel="shortcut icon" href="/images/favicon.png" />
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
