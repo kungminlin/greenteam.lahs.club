@@ -36,6 +36,17 @@
 
 					<!-- One -->
 						<section class="wrapper style4 container">
+							<header><h1 style="font-weight:bold">Upcoming Events</h1></header>
+							<div class="content">
+								<article>
+									<section>
+										<header style="font-weight:bolder">
+											E-Waste
+										</header>
+										<p>Los High School's Green Team is collaborating with Green Mouse Recycling to host an e-waste collection drive that is scheduled for Saturday, November 2nd, from 9am to 2pm, at 201 Almond Ave., Los Altos. Accepted items include monitors, computers, laptops, cell phones, telecom equipment, TV wires/cables, PC boards, scrap metal/aluminum, computer mice, keyboards, printers, toner and ink cartridges, stereo equipment, and DVD/CD/MP3 players. Smoke detectors, fluorescent lights, and alkaline batteries are not permitted. The event will include a bake sale and the proceeds will benefit LAHS Green Team. For more information, please contact <a href="mailto:lahsgreenteam@gmail.com">lahsgreenteam@gmail.com</a></p>
+									</section>
+								</article>
+							</div>
 							<header><h1 style="font-weight:bold">Past Events</h1></header>
 							<div class="content">
 								<article>
