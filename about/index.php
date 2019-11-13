@@ -47,7 +47,7 @@
 									<!-- Sidebar -->
 										<div class="sidebar">
 											<section>
-												<a class="image featured"><img src="/images/sarah_anya.png" /></a>
+												<a class="image featured"><img src="/images/elenaudrey.jpg" /></a>
 												<header>
 													<h3><strong>Co-President</strong> Elena Atluri</h3>
 												</header>
